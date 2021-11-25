@@ -14,7 +14,7 @@ describe('anchor-escrow-program', () => {
 
   before(async () => {
     const wallet = program.provider.wallet;
-    // Create FooCoin mint
+    // Create FooCoin mint.
     let fooCoinMint = await spl.Token.createMint(
       program.provider.connection,
       wallet.payer,
@@ -23,7 +23,7 @@ describe('anchor-escrow-program', () => {
       0,
       spl.TOKEN_PROGRAM_ID,
     )
-    // Create BarCoin mint
+    // Create BarCoin mint.
     let barCoinMint = await spl.Token.createMint(
       program.provider.connection,
       wallet.payer,
@@ -32,8 +32,8 @@ describe('anchor-escrow-program', () => {
       0,
       spl.TOKEN_PROGRAM_ID,
     )
-    // Create associated token accounts
-    // Both the `maker` and `taker` will have FooCoin and BarCoin ATAs
+    // Create associated token accounts.
+    // Both the `maker` and `taker` will have FooCoin and BarCoin ATAs.
     let makerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(wallet.publicKey);
     let makerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(wallet.publicKey);
     let takerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(taker.publicKey);

@@ -21,6 +21,14 @@ describe('anchor-escrow-program', () => {
       0,
       spl.TOKEN_PROGRAM_ID,
     )
+    let barCoinMint = await spl.Token.createMint(
+      program.provider.connection,
+      wallet.payer,
+      wallet.publicKey,
+      wallet.publicKey,
+      0,
+      spl.TOKEN_PROGRAM_ID,
+    )
   });
 
   it('Is initialized!', async () => {

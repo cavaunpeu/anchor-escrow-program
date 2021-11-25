@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::Token;
 
 declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 
@@ -23,6 +24,7 @@ pub struct Initialize<'info> {
     pub swap_state: Account<'info, SwapState>,
     #[account(mut)]
     pub maker: Signer<'info>,
+    pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>
 }
 

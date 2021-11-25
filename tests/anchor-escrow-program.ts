@@ -68,6 +68,7 @@ describe('anchor-escrow-program', () => {
         accounts: {
           swapState: swapState.publicKey,
           maker: wallet.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId
         },
         signers: [swapState]

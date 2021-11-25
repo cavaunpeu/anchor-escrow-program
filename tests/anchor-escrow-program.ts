@@ -10,6 +10,8 @@ describe('anchor-escrow-program', () => {
 
   const program = anchor.workspace.AnchorEscrowProgram as Program<AnchorEscrowProgram>;
 
+  const taker = anchor.web3.Keypair.generate();
+
   before(async () => {
     const wallet = program.provider.wallet;
     // Create FooCoin mint
@@ -30,6 +32,12 @@ describe('anchor-escrow-program', () => {
       0,
       spl.TOKEN_PROGRAM_ID,
     )
+    // Create associated token accounts
+    // Both the `maker` and `taker` will have FooCoin and BarCoin ATAs
+    let makerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(wallet.publicKey);
+    let makerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(wallet.publicKey);
+    let takerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(taker.publicKey);
+    let takerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(taker.publicKey);
   });
 
   it('Is initialized!', async () => {

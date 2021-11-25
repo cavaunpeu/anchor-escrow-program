@@ -9,11 +9,10 @@ describe('anchor-escrow-program', () => {
   anchor.setProvider(anchor.Provider.env());
 
   const program = anchor.workspace.AnchorEscrowProgram as Program<AnchorEscrowProgram>;
-
+  const wallet = program.provider.wallet;
   const taker = anchor.web3.Keypair.generate();
 
   before(async () => {
-    const wallet = program.provider.wallet;
     // Create FooCoin mint.
     let fooCoinMint = await spl.Token.createMint(
       program.provider.connection,
@@ -53,9 +52,22 @@ describe('anchor-escrow-program', () => {
     );
   });
 
-  it('Is initialized!', async () => {
-    // Add your test here.
-    const tx = await program.rpc.initialize({});
-    console.log("Your transaction signature", tx);
+  it('it lets Will stipulate his desired swap then send his FooCoins to escrow', async () => {
+    const swapState = anchor.web3.Keypair.generate();
+    const [escrow, escrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [swapState.publicKey.toBuffer()],
+      program.programId
+    );
+
+    await program.rpc.submit(
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          maker: wallet.publicKey,
+          systemProgram: anchor.web3.SystemProgram.programId
+        },
+        signers: [swapState]
+      }
+    )
   });
 });

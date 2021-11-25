@@ -38,6 +38,19 @@ describe('anchor-escrow-program', () => {
     let makerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(wallet.publicKey);
     let takerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(taker.publicKey);
     let takerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(taker.publicKey);
+    // Mint FooCoin to maker and BarCoin to taker.
+    fooCoinMint.mintTo(
+      makerFooCoinTokenAccount,
+      wallet.publicKey,
+      [],
+      100
+    );
+    barCoinMint.mintTo(
+      takerBarCoinTokenAccount,
+      wallet.publicKey,
+      [],
+      100
+    );
   });
 
   it('Is initialized!', async () => {

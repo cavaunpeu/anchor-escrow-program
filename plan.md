@@ -14,8 +14,8 @@ Will will put 10 FC into an escrow. When Bob puts 22 BC into this escrow, a swap
 - [x] create a BC ATA for Will.
 - [x] create a FC ATA for Bob.
 - [x] create a BC ATA for Bob.
-- [ ] mint FC to Will's FC ATA.
-- [ ] mint BC to Bob's BC ATA.
+- [x] mint FC to Will's FC ATA.
+- [x] mint BC to Bob's BC ATA.
 
 # submit
 

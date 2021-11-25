@@ -61,7 +61,7 @@ describe('anchor-escrow-program', () => {
 
   it('it lets maker stipulate her desired swap then send her FooCoins to escrow', async () => {
     const swapState = anchor.web3.Keypair.generate();
-    const [escrow, escrowBump] = await anchor.web3.PublicKey.findProgramAddress(
+    const [escrowAccount, escrowAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
       [swapState.publicKey.toBuffer()],
       program.programId
     );

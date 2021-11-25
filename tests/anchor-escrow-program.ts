@@ -12,9 +12,16 @@ describe('anchor-escrow-program', () => {
   const wallet = program.provider.wallet;
   const taker = anchor.web3.Keypair.generate();
 
+  let fooCoinMint: spl.Token;
+  let barCoinMint: spl.Token;
+  let makerFooCoinTokenAccount: anchor.web3.publicKey;
+  let makerBarCoinTokenAccount: anchor.web3.publicKey;
+  let takerFooCoinTokenAccount: anchor.web3.publicKey;
+  let takerBarCoinTokenAccount: anchor.web3.publicKey;
+
   before(async () => {
     // Create FooCoin mint.
-    let fooCoinMint = await spl.Token.createMint(
+    fooCoinMint = await spl.Token.createMint(
       program.provider.connection,
       wallet.payer,
       wallet.publicKey,
@@ -23,7 +30,7 @@ describe('anchor-escrow-program', () => {
       spl.TOKEN_PROGRAM_ID,
     )
     // Create BarCoin mint.
-    let barCoinMint = await spl.Token.createMint(
+    barCoinMint = await spl.Token.createMint(
       program.provider.connection,
       wallet.payer,
       wallet.publicKey,
@@ -33,10 +40,10 @@ describe('anchor-escrow-program', () => {
     )
     // Create associated token accounts.
     // Both the `maker` and `taker` will have FooCoin and BarCoin ATAs.
-    let makerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(wallet.publicKey);
-    let makerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(wallet.publicKey);
-    let takerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(taker.publicKey);
-    let takerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(taker.publicKey);
+    makerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(wallet.publicKey);
+    makerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(wallet.publicKey);
+    takerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(taker.publicKey);
+    takerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(taker.publicKey);
     // Mint FooCoin to maker and BarCoin to taker.
     fooCoinMint.mintTo(
       makerFooCoinTokenAccount,

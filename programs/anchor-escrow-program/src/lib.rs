@@ -6,8 +6,13 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 pub mod anchor_escrow_program {
     use super::*;
     pub fn submit(
-        ctx: Context<Initialize>
+        ctx: Context<Initialize>,
+        foo_coin_amount: u8,
+        bar_coin_amount: u8
     ) -> ProgramResult {
+        // Set properties on swap state
+        let swap_state = &mut ctx.accounts.swap_state;
+        swap_state.bar_coin_amount = bar_coin_amount;
         Ok(())
     }
 }
@@ -22,4 +27,6 @@ pub struct Initialize<'info> {
 }
 
 #[account]
-pub struct SwapState {}
+pub struct SwapState {
+    bar_coin_amount: u8
+}

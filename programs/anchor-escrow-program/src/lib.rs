@@ -7,7 +7,7 @@ declare_id!("Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS");
 pub mod anchor_escrow_program {
     use super::*;
     pub fn submit(
-        ctx: Context<Initialize>,
+        ctx: Context<Submit>,
         foo_coin_amount: u8,
         bar_coin_amount: u8
     ) -> ProgramResult {
@@ -19,7 +19,7 @@ pub mod anchor_escrow_program {
 }
 
 #[derive(Accounts)]
-pub struct Initialize<'info> {
+pub struct Submit<'info> {
     #[account(init, payer = maker, space = 8 + 8)]
     pub swap_state: Account<'info, SwapState>,
     #[account(mut)]

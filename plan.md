@@ -10,14 +10,12 @@ Will will put 10 FC into an escrow. When Bob puts 22 BC into this escrow, a swap
 - [x] give the testing program's wallet address authority over the FC mint.
 - [x] create a BC mint.
 - [x] give the testing program's wallet address authority over the BC mint.
-- [ ] create a wallet for Will.
-- [ ] create a wallet for Bob.
-- [ ] create a FC account for Will.
-- [ ] give Will wallet authority over this token account.
-- [ ] mint FC to Will.
-- [ ] create a BC account for Bob.
-- [ ] give Bob wallet authority over this token account.
-- [ ] mint BC to Bob.
+- [x] create a FC ATA for Will.
+- [x] create a BC ATA for Will.
+- [x] create a FC ATA for Bob.
+- [x] create a BC ATA for Bob.
+- [ ] mint FC to Will's FC ATA.
+- [ ] mint BC to Bob's BC ATA.
 
 # submit
 

@@ -8,8 +8,8 @@ pub mod anchor_escrow_program {
     use super::*;
     pub fn submit(
         ctx: Context<Submit>,
-        foo_coin_amount: u8,
-        bar_coin_amount: u8
+        foo_coin_amount: u64,
+        bar_coin_amount: u64
     ) -> ProgramResult {
         // Set properties on swap state
         let swap_state = &mut ctx.accounts.swap_state;
@@ -31,5 +31,5 @@ pub struct Submit<'info> {
 
 #[account]
 pub struct SwapState {
-    bar_coin_amount: u8
+    bar_coin_amount: u64
 }

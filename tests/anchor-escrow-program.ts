@@ -65,8 +65,8 @@ describe('anchor-escrow-program', () => {
       [swapState.publicKey.toBuffer()],
       program.programId
     );
-    const fooCoinAmount = 10;
-    const barCoinAmount = 22;
+    const fooCoinAmount = new anchor.BN(10);
+    const barCoinAmount = new anchor.BN(22);
 
     await program.rpc.submit(
       fooCoinAmount,

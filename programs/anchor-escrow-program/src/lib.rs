@@ -22,7 +22,6 @@ pub mod anchor_escrow_program {
 pub struct Submit<'info> {
     #[account(init, payer = maker, space = 8 + 8)]
     pub swap_state: Account<'info, SwapState>,
-    #[account(mut)]
     pub maker: Signer<'info>,
     pub maker_foo_coin_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,

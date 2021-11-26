@@ -71,14 +71,17 @@ describe('anchor-escrow-program', () => {
     await program.rpc.submit(
       fooCoinAmount,
       barCoinAmount,
+      escrowAccountBump,
       {
         accounts: {
           swapState: swapState.publicKey,
           maker: wallet.publicKey,
           fooCoinMint: fooCoinMint.publicKey,
           makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
-          systemProgram: anchor.web3.SystemProgram.programId
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId,
         },
         signers: [swapState]
       }

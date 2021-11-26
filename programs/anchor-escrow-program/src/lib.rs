@@ -8,9 +8,9 @@ pub mod anchor_escrow_program {
     use super::*;
     pub fn submit(
         ctx: Context<Submit>,
+        escrow_account_bump: u8,
         foo_coin_amount: u64,
         bar_coin_amount: u64,
-        escrow_account_bump: u8,
     ) -> ProgramResult {
         // Set properties on swap state
         let swap_state = &mut ctx.accounts.swap_state;

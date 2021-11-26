@@ -69,9 +69,9 @@ describe('anchor-escrow-program', () => {
     const barCoinAmount = new anchor.BN(22);
 
     await program.rpc.submit(
+      escrowAccountBump,
       fooCoinAmount,
       barCoinAmount,
-      escrowAccountBump,
       {
         accounts: {
           swapState: swapState.publicKey,

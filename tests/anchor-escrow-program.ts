@@ -15,15 +15,17 @@ describe('anchor-escrow-program', () => {
 
   let fooCoinMint: spl.Token;
   let barCoinMint: spl.Token;
-  let makerFooCoinTokenAccount: anchor.web3.publicKey;
-  let makerBarCoinTokenAccount: anchor.web3.publicKey;
-  let takerFooCoinTokenAccount: anchor.web3.publicKey;
-  let takerBarCoinTokenAccount: anchor.web3.publicKey;
+  let makerFooCoinTokenAccount: anchor.web3.PublicKey;
+  let makerBarCoinTokenAccount: anchor.web3.PublicKey;
+  let takerFooCoinTokenAccount: anchor.web3.PublicKey;
+  let takerBarCoinTokenAccount: anchor.web3.PublicKey;
 
   const makerFooCoinTokenAccountInitialAmount = 100;
   const takerBarCoinTokenAccountInitialAmount = 100;
   const fooCoinAmount = 10;
   const barCoinAmount = 22;
+
+
 
   before(async () => {
     // Create FooCoin mint.

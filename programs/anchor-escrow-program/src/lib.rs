@@ -15,6 +15,7 @@ pub mod anchor_escrow_program {
         // Set properties on swap state
         let swap_state = &mut ctx.accounts.swap_state;
         swap_state.bar_coin_amount = bar_coin_amount;
+        swap_state.escrow_account_bump = escrow_account_bump;
         // Transfer FooCoin's from maker's FooCoin ATA to escrow
         anchor_spl::token::transfer(
             CpiContext::new(
@@ -33,7 +34,7 @@ pub mod anchor_escrow_program {
 #[derive(Accounts)]
 #[instruction(escrow_account_bump: u8)]
 pub struct Submit<'info> {
-    #[account(init, payer = maker, space = 8 + 8)]
+    #[account(init, payer = maker, space = 8 + 8 + 1)]
     pub swap_state: Account<'info, SwapState>,
     #[account(mut, constraint = maker_foo_coin_token_account.mint == foo_coin_mint.key())]
     pub maker_foo_coin_token_account: Account<'info, TokenAccount>,
@@ -55,5 +56,6 @@ pub struct Submit<'info> {
 
 #[account]
 pub struct SwapState {
-    bar_coin_amount: u64
+    bar_coin_amount: u64,
+    escrow_account_bump: u8
 }

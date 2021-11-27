@@ -30,6 +30,24 @@ pub mod anchor_escrow_program {
             foo_coin_amount
         )
     }
+
+    pub fn accept(
+        ctx: Context<Accept>
+    ) -> ProgramResult {
+        // Transfer BarCoin's from taker's BarCoin ATA to maker's BarCoin ATA
+        let bar_coin_amount = ctx.accounts.swap_state.bar_coin_amount;
+        anchor_spl::token::transfer(
+            CpiContext::new(
+                ctx.accounts.token_program.to_account_info(),
+                anchor_spl::token::Transfer {
+                    from: ctx.accounts.taker_bar_coin_token_account.to_account_info(),
+                    to: ctx.accounts.maker_bar_coin_token_account.to_account_info(),
+                    authority: ctx.accounts.taker.to_account_info()
+                }
+            ),
+            bar_coin_amount
+        )
+    }
 }
 
 #[derive(Accounts)]
@@ -53,6 +71,21 @@ pub struct Submit<'info> {
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>
+}
+
+#[derive(Accounts)]
+pub struct Accept<'info> {
+    #[account(constraint = swap_state.maker == *maker.key)]
+    pub swap_state: Account<'info, SwapState>,
+    #[account(mut, constraint = maker_bar_coin_token_account.mint == bar_coin_mint.key())]
+    pub maker_bar_coin_token_account: Account<'info, TokenAccount>,
+    #[account(mut, constraint = taker_bar_coin_token_account.mint == bar_coin_mint.key())]
+    pub taker_bar_coin_token_account: Account<'info, TokenAccount>,
+    pub maker: AccountInfo<'info>,
+    pub taker: Signer<'info>,
+    pub foo_coin_mint: Account<'info, Mint>,
+    pub bar_coin_mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>
 }
 
 #[account]

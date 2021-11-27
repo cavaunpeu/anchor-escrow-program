@@ -74,7 +74,7 @@ describe('anchor-escrow-program', () => {
     );
   });
 
-  it('it lets maker stipulate her desired swap then send her FooCoins to escrow', async () => {
+  it('it lets maker submit and taker accept a transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -102,5 +102,21 @@ describe('anchor-escrow-program', () => {
       (await fooCoinMint.getAccountInfo(makerFooCoinTokenAccount)).amount.toNumber(),
       makerFooCoinTokenAccountInitialAmount - fooCoinAmount
     );
+
+    await program.rpc.accept(
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          makerBarCoinTokenAccount: makerBarCoinTokenAccount,
+          takerBarCoinTokenAccount: takerBarCoinTokenAccount,
+          maker: wallet.publicKey,
+          taker: taker.publicKey,
+          fooCoinMint: fooCoinMint.publicKey,
+          barCoinMint: barCoinMint.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+        },
+        signers: [taker]
+      }
+    )
   });
 });

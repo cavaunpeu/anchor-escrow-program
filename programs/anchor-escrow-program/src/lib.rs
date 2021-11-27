@@ -15,6 +15,7 @@ pub mod anchor_escrow_program {
         // Set properties on swap state
         let swap_state = &mut ctx.accounts.swap_state;
         swap_state.maker = ctx.accounts.maker.key();
+        swap_state.bar_coin_mint = ctx.accounts.bar_coin_mint.key();
         swap_state.bar_coin_amount = bar_coin_amount;
         swap_state.escrow_account_bump = escrow_account_bump;
         // Transfer FooCoin's from maker's FooCoin ATA to escrow
@@ -53,7 +54,7 @@ pub mod anchor_escrow_program {
 #[derive(Accounts)]
 #[instruction(escrow_account_bump: u8)]
 pub struct Submit<'info> {
-    #[account(init, payer = maker, space = 8 + 32 + 8 + 1)]
+    #[account(init, payer = maker, space = 8 + 32 + 32 + 8 + 1)]
     pub swap_state: Account<'info, SwapState>,
     #[account(mut, constraint = maker_foo_coin_token_account.mint == foo_coin_mint.key())]
     pub maker_foo_coin_token_account: Account<'info, TokenAccount>,
@@ -68,6 +69,7 @@ pub struct Submit<'info> {
     )]
     pub escrow_account: Account<'info, TokenAccount>,
     pub foo_coin_mint: Account<'info, Mint>,
+    pub bar_coin_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>,
     pub system_program: Program<'info, System>,
     pub rent: Sysvar<'info, Rent>
@@ -77,20 +79,20 @@ pub struct Submit<'info> {
 pub struct Accept<'info> {
     #[account(constraint = swap_state.maker == *maker.key)]
     pub swap_state: Account<'info, SwapState>,
-    #[account(mut, constraint = maker_bar_coin_token_account.mint == bar_coin_mint.key())]
+    #[account(mut, constraint = maker_bar_coin_token_account.mint == swap_state.bar_coin_mint)]
     pub maker_bar_coin_token_account: Account<'info, TokenAccount>,
-    #[account(mut, constraint = taker_bar_coin_token_account.mint == bar_coin_mint.key())]
+    #[account(mut, constraint = taker_bar_coin_token_account.mint == swap_state.bar_coin_mint)]
     pub taker_bar_coin_token_account: Account<'info, TokenAccount>,
     pub maker: AccountInfo<'info>,
     pub taker: Signer<'info>,
     pub foo_coin_mint: Account<'info, Mint>,
-    pub bar_coin_mint: Account<'info, Mint>,
     pub token_program: Program<'info, Token>
 }
 
 #[account]
 pub struct SwapState {
     maker: Pubkey,
+    bar_coin_mint: Pubkey,
     bar_coin_amount: u64,
     escrow_account_bump: u8
 }

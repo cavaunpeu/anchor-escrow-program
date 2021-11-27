@@ -84,6 +84,7 @@ describe('anchor-escrow-program', () => {
           swapState: swapState.publicKey,
           maker: wallet.publicKey,
           fooCoinMint: fooCoinMint.publicKey,
+          barCoinMint: barCoinMint.publicKey,
           makerFooCoinTokenAccount: makerFooCoinTokenAccount,
           escrowAccount: escrowAccount,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
@@ -112,7 +113,6 @@ describe('anchor-escrow-program', () => {
           maker: wallet.publicKey,
           taker: taker.publicKey,
           fooCoinMint: fooCoinMint.publicKey,
-          barCoinMint: barCoinMint.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
         },
         signers: [taker]

@@ -20,6 +20,9 @@ describe('anchor-escrow-program', () => {
   let takerFooCoinTokenAccount: anchor.web3.publicKey;
   let takerBarCoinTokenAccount: anchor.web3.publicKey;
 
+  const fooCoinAmount = 10;
+  const barCoinAmount = 22;
+
   before(async () => {
     // Create FooCoin mint.
     fooCoinMint = await spl.Token.createMint(
@@ -66,13 +69,11 @@ describe('anchor-escrow-program', () => {
       [swapState.publicKey.toBuffer()],
       program.programId
     );
-    const fooCoinAmount = new anchor.BN(10);
-    const barCoinAmount = new anchor.BN(22);
 
     await program.rpc.submit(
       escrowAccountBump,
-      fooCoinAmount,
-      barCoinAmount,
+      new anchor.BN(fooCoinAmount),
+      new anchor.BN(barCoinAmount),
       {
         accounts: {
           swapState: swapState.publicKey,
@@ -90,7 +91,7 @@ describe('anchor-escrow-program', () => {
 
     assert.equal(
       (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber(),
-      fooCoinAmount.toNumber()
+      fooCoinAmount
     );
   });
 });

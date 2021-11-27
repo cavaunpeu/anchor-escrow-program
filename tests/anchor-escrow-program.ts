@@ -20,6 +20,8 @@ describe('anchor-escrow-program', () => {
   let takerFooCoinTokenAccount: anchor.web3.publicKey;
   let takerBarCoinTokenAccount: anchor.web3.publicKey;
 
+  const makerFooCoinTokenAccountInitialAmount = 100;
+  const takerBarCoinTokenAccountInitialAmount = 100;
   const fooCoinAmount = 10;
   const barCoinAmount = 22;
 
@@ -53,13 +55,13 @@ describe('anchor-escrow-program', () => {
       makerFooCoinTokenAccount,
       wallet.publicKey,
       [],
-      100
+      makerFooCoinTokenAccountInitialAmount
     );
     await barCoinMint.mintTo(
       takerBarCoinTokenAccount,
       wallet.publicKey,
       [],
-      100
+      takerBarCoinTokenAccountInitialAmount
     );
   });
 

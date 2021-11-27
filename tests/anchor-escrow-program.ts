@@ -19,13 +19,14 @@ describe('anchor-escrow-program', () => {
   let makerBarCoinTokenAccount: anchor.web3.PublicKey;
   let takerFooCoinTokenAccount: anchor.web3.PublicKey;
   let takerBarCoinTokenAccount: anchor.web3.PublicKey;
+  let swapState: anchor.web3.Keypair;
+  let escrowAccount: anchor.web3.PublicKey;
+  let escrowAccountBump: number;
 
   const makerFooCoinTokenAccountInitialAmount = 100;
   const takerBarCoinTokenAccountInitialAmount = 100;
   const fooCoinAmount = 10;
   const barCoinAmount = 22;
-
-
 
   before(async () => {
     // Create FooCoin mint.
@@ -65,15 +66,15 @@ describe('anchor-escrow-program', () => {
       [],
       takerBarCoinTokenAccountInitialAmount
     );
-  });
-
-  it('it lets maker stipulate her desired swap then send her FooCoins to escrow', async () => {
-    const swapState = anchor.web3.Keypair.generate();
-    const [escrowAccount, escrowAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
+    // Instantiate swap state and escrow account.
+    swapState = anchor.web3.Keypair.generate();
+    [escrowAccount, escrowAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
       [swapState.publicKey.toBuffer()],
       program.programId
     );
+  });
 
+  it('it lets maker stipulate her desired swap then send her FooCoins to escrow', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),

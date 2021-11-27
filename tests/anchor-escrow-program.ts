@@ -2,6 +2,7 @@ import * as anchor from '@project-serum/anchor';
 import * as spl from '@solana/spl-token';
 import { Program } from '@project-serum/anchor';
 import { AnchorEscrowProgram } from '../target/types/anchor_escrow_program';
+import * as assert from 'assert';
 
 describe('anchor-escrow-program', () => {
 
@@ -86,5 +87,7 @@ describe('anchor-escrow-program', () => {
         signers: [swapState]
       }
     )
+
+    assert.equal(fooCoinAmount.toNumber(), (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber());
   });
 });

@@ -45,13 +45,13 @@ describe('anchor-escrow-program', () => {
     takerFooCoinTokenAccount = await fooCoinMint.createAssociatedTokenAccount(taker.publicKey);
     takerBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(taker.publicKey);
     // Mint FooCoin to maker and BarCoin to taker.
-    fooCoinMint.mintTo(
+    await fooCoinMint.mintTo(
       makerFooCoinTokenAccount,
       wallet.publicKey,
       [],
       100
     );
-    barCoinMint.mintTo(
+    await barCoinMint.mintTo(
       takerBarCoinTokenAccount,
       wallet.publicKey,
       [],

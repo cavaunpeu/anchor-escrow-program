@@ -88,6 +88,9 @@ describe('anchor-escrow-program', () => {
       }
     )
 
-    assert.equal(fooCoinAmount.toNumber(), (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber());
+    assert.equal(
+      (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber(),
+      fooCoinAmount.toNumber()
+    );
   });
 });

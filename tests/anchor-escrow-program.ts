@@ -286,4 +286,48 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.logs[11], 'Program log: Error: insufficient funds');
     }
   })
+
+  it('it does not let taker accept a swap for which they have insufficient funds', async () => {
+    await program.rpc.submit(
+      escrowAccountBump,
+      new anchor.BN(fooCoinAmount),
+      new anchor.BN(takerBarCoinTokenAccountInitialAmount + 1),
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          maker: wallet.publicKey,
+          fooCoinMint: fooCoinMint.publicKey,
+          barCoinMint: barCoinMint.publicKey,
+          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [swapState]
+      }
+    );
+
+    try {
+      await program.rpc.accept(
+        {
+          accounts: {
+            swapState: swapState.publicKey,
+            makerBarCoinTokenAccount: makerBarCoinTokenAccount,
+            takerBarCoinTokenAccount: takerBarCoinTokenAccount,
+            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            escrowAccount: escrowAccount,
+            maker: wallet.publicKey,
+            taker: taker.publicKey,
+            fooCoinMint: fooCoinMint.publicKey,
+            tokenProgram: spl.TOKEN_PROGRAM_ID,
+          },
+          signers: [taker]
+        }
+      );
+    } catch (err) {
+      assert.equal(err.message, 'failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1');
+      assert.equal(err.logs[3], 'Program log: Error: insufficient funds');
+    }
+  })
 });

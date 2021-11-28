@@ -133,4 +133,46 @@ describe('anchor-escrow-program', () => {
     assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
 
   });
+
+  it('it lets maker submit and maker cancel transaction', async () => {
+    await program.rpc.submit(
+      escrowAccountBump,
+      new anchor.BN(fooCoinAmount),
+      new anchor.BN(barCoinAmount),
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          maker: wallet.publicKey,
+          fooCoinMint: fooCoinMint.publicKey,
+          barCoinMint: barCoinMint.publicKey,
+          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [swapState]
+      }
+    );
+
+    await program.rpc.cancel(
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          maker: wallet.publicKey,
+          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+        }
+      }
+    );
+
+    assert.equal(
+      (await fooCoinMint.getAccountInfo(makerFooCoinTokenAccount)).amount.toNumber(),
+      makerFooCoinTokenAccountInitialAmount
+    );
+    assert.equal(null, program.provider.connection.getAccountInfo(escrowAccount));
+    assert.equal(null, program.provider.connection.getAccountInfo(swapState.publicKey));
+
+  });
 });

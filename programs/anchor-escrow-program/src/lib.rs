@@ -78,6 +78,40 @@ pub mod anchor_escrow_program {
             ]]
         ))
     }
+
+    pub fn cancel(
+        ctx: Context<Cancel>
+    ) -> ProgramResult {
+        // Transfer FooCoin's from escrow to maker's FooCoin ATA
+        anchor_spl::token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                anchor_spl::token::Transfer {
+                    from: ctx.accounts.escrow_account.to_account_info(),
+                    to: ctx.accounts.maker_foo_coin_token_account.to_account_info(),
+                    authority: ctx.accounts.escrow_account.to_account_info()
+                },
+                &[&[
+                    ctx.accounts.swap_state.key().as_ref(),
+                    &[ctx.accounts.swap_state.escrow_account_bump]
+                ]]
+            ),
+            ctx.accounts.escrow_account.amount
+        )?;
+        // Close the escrow account
+        anchor_spl::token::close_account(CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            anchor_spl::token::CloseAccount {
+                account: ctx.accounts.escrow_account.to_account_info(),
+                destination: ctx.accounts.maker.to_account_info(),
+                authority: ctx.accounts.escrow_account.to_account_info()
+            },
+            &[&[
+                ctx.accounts.swap_state.key().as_ref(),
+                &[ctx.accounts.swap_state.escrow_account_bump]
+            ]]
+        ))
+    }
 }
 
 #[derive(Accounts)]
@@ -119,6 +153,18 @@ pub struct Accept<'info> {
     pub maker: AccountInfo<'info>,
     pub taker: Signer<'info>,
     pub foo_coin_mint: Account<'info, Mint>,
+    pub token_program: Program<'info, Token>
+}
+
+#[derive(Accounts)]
+pub struct Cancel<'info> {
+    #[account(mut, constraint = swap_state.maker == *maker.key, close = maker)]
+    pub swap_state: Account<'info, SwapState>,
+    #[account(mut, constraint = maker_foo_coin_token_account.mint == escrow_account.mint)]
+    pub maker_foo_coin_token_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub escrow_account: Account<'info, TokenAccount>,
+    pub maker: Signer<'info>,
     pub token_program: Program<'info, Token>
 }
 

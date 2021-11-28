@@ -129,10 +129,8 @@ describe('anchor-escrow-program', () => {
       (await barCoinMint.getAccountInfo(makerBarCoinTokenAccount)).amount.toNumber(),
       barCoinAmount
     );
-    assert.equal(
-      (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber(),
-      0
-    );
+    assert.equal(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
+    assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
 
   });
 });

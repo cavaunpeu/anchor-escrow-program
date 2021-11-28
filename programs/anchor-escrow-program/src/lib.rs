@@ -63,7 +63,20 @@ pub mod anchor_escrow_program {
                 ]]
             ),
             ctx.accounts.escrow_account.amount
-        )
+        )?;
+        // Close the escrow account
+        anchor_spl::token::close_account(CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            anchor_spl::token::CloseAccount {
+                account: ctx.accounts.escrow_account.to_account_info(),
+                destination: ctx.accounts.maker.to_account_info(),
+                authority: ctx.accounts.escrow_account.to_account_info()
+            },
+            &[&[
+                ctx.accounts.swap_state.key().as_ref(),
+                &[ctx.accounts.swap_state.escrow_account_bump]
+            ]]
+        ))
     }
 }
 

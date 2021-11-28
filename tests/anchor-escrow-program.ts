@@ -196,4 +196,67 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.msg, 'The given account is not owned by the executing program');
     }
   });
+
+  it('it does not let taker send the wrong kind of tokens', async () => {
+    await program.rpc.submit(
+      escrowAccountBump,
+      new anchor.BN(fooCoinAmount),
+      new anchor.BN(barCoinAmount),
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          maker: wallet.publicKey,
+          fooCoinMint: fooCoinMint.publicKey,
+          barCoinMint: barCoinMint.publicKey,
+          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [swapState]
+      }
+    );
+
+    // Create ErroneousCoin mint.
+    const erroneousCoinMint = await spl.Token.createMint(
+      program.provider.connection,
+      wallet.payer,
+      wallet.publicKey,
+      wallet.publicKey,
+      0,
+      spl.TOKEN_PROGRAM_ID,
+    )
+    // Create taker ErroneousCoin ATA.
+    const takerErroneousCoinTokenAccount = await erroneousCoinMint.createAssociatedTokenAccount(wallet.publicKey);
+    // Mint ErroneousCoins to taker ErroneousCoin ATA.
+    await erroneousCoinMint.mintTo(
+      takerErroneousCoinTokenAccount,
+      wallet.publicKey,
+      [],
+      100
+    );
+
+    try {
+      await program.rpc.accept(
+        {
+          accounts: {
+            swapState: swapState.publicKey,
+            makerBarCoinTokenAccount: makerBarCoinTokenAccount,
+            takerBarCoinTokenAccount: takerErroneousCoinTokenAccount,  // not BarCoins!
+            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            escrowAccount: escrowAccount,
+            maker: wallet.publicKey,
+            taker: taker.publicKey,
+            fooCoinMint: fooCoinMint.publicKey,
+            tokenProgram: spl.TOKEN_PROGRAM_ID,
+          },
+          signers: [taker]
+        }
+      );
+    } catch (err) {
+      assert.equal(err.code, 143);
+      assert.equal(err.msg, 'A raw constraint was violated');
+    }
+  })
 });

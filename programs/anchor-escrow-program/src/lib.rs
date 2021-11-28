@@ -47,6 +47,22 @@ pub mod anchor_escrow_program {
                 }
             ),
             bar_coin_amount
+        )?;
+        // Transfer FooCoin's from escrow to taker's FooCoin ATA
+        anchor_spl::token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                anchor_spl::token::Transfer {
+                    from: ctx.accounts.escrow_account.to_account_info(),
+                    to: ctx.accounts.taker_foo_coin_token_account.to_account_info(),
+                    authority: ctx.accounts.escrow_account.to_account_info()
+                },
+                &[&[
+                    ctx.accounts.swap_state.key().as_ref(),
+                    &[ctx.accounts.swap_state.escrow_account_bump]
+                ]]
+            ),
+            ctx.accounts.escrow_account.amount
         )
     }
 }
@@ -83,6 +99,10 @@ pub struct Accept<'info> {
     pub maker_bar_coin_token_account: Account<'info, TokenAccount>,
     #[account(mut, constraint = taker_bar_coin_token_account.mint == swap_state.bar_coin_mint)]
     pub taker_bar_coin_token_account: Account<'info, TokenAccount>,
+    #[account(mut, constraint = taker_foo_coin_token_account.mint == escrow_account.mint)]
+    pub taker_foo_coin_token_account: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub escrow_account: Account<'info, TokenAccount>,
     pub maker: AccountInfo<'info>,
     pub taker: Signer<'info>,
     pub foo_coin_mint: Account<'info, Mint>,

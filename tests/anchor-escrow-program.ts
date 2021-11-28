@@ -93,7 +93,7 @@ describe('anchor-escrow-program', () => {
         },
         signers: [swapState]
       }
-    )
+    );
 
     assert.equal(
       (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber(),
@@ -110,6 +110,8 @@ describe('anchor-escrow-program', () => {
           swapState: swapState.publicKey,
           makerBarCoinTokenAccount: makerBarCoinTokenAccount,
           takerBarCoinTokenAccount: takerBarCoinTokenAccount,
+          takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
           maker: wallet.publicKey,
           taker: taker.publicKey,
           fooCoinMint: fooCoinMint.publicKey,
@@ -117,6 +119,20 @@ describe('anchor-escrow-program', () => {
         },
         signers: [taker]
       }
-    )
+    );
+
+    assert.equal(
+      (await barCoinMint.getAccountInfo(takerBarCoinTokenAccount)).amount.toNumber(),
+      takerBarCoinTokenAccountInitialAmount - barCoinAmount
+    );
+    assert.equal(
+      (await barCoinMint.getAccountInfo(makerBarCoinTokenAccount)).amount.toNumber(),
+      barCoinAmount
+    );
+    assert.equal(
+      (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber(),
+      0
+    );
+
   });
 });

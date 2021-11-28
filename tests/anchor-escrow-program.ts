@@ -259,4 +259,31 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.msg, 'A raw constraint was violated');
     }
   })
+
+  it('it does not let maker submit a swap for which they have insufficient funds', async () => {
+    try {
+      await program.rpc.submit(
+        escrowAccountBump,
+        new anchor.BN(makerFooCoinTokenAccountInitialAmount + 1),
+        new anchor.BN(barCoinAmount),
+        {
+          accounts: {
+            swapState: swapState.publicKey,
+            maker: wallet.publicKey,
+            fooCoinMint: fooCoinMint.publicKey,
+            barCoinMint: barCoinMint.publicKey,
+            makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+            escrowAccount: escrowAccount,
+            tokenProgram: spl.TOKEN_PROGRAM_ID,
+            rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+            systemProgram: anchor.web3.SystemProgram.programId,
+          },
+          signers: [swapState]
+        }
+      );
+    } catch (err) {
+      assert.equal(err.message, 'failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1');
+      assert.equal(err.logs[11], 'Program log: Error: insufficient funds');
+    }
+  })
 });

@@ -74,6 +74,16 @@ describe('anchor-escrow-program', () => {
     );
   });
 
+  let assertGracefulCleanup = async () => {
+    assert.equal(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
+    assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
+  };
+
+  let assertNotGracefulCleanup = async () => {
+    assert.notEqual(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
+    assert.notEqual(null, await program.provider.connection.getAccountInfo(escrowAccount));
+  };
+
   it('lets maker submit and taker accept a transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
@@ -129,8 +139,8 @@ describe('anchor-escrow-program', () => {
       (await barCoinMint.getAccountInfo(makerBarCoinTokenAccount)).amount.toNumber(),
       barCoinAmount
     );
-    assert.equal(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
-    assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
+
+    await assertGracefulCleanup();
 
   });
 
@@ -171,8 +181,6 @@ describe('anchor-escrow-program', () => {
       (await fooCoinMint.getAccountInfo(makerFooCoinTokenAccount)).amount.toNumber(),
       makerFooCoinTokenAccountInitialAmount
     );
-    assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
-    assert.equal(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
 
     try {
       await program.rpc.accept(
@@ -195,6 +203,8 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.code, 167);
       assert.equal(err.msg, 'The given account is not owned by the executing program');
     }
+
+    await assertGracefulCleanup();
   });
 
   it('does not let taker send the wrong kind of tokens', async () => {
@@ -258,6 +268,8 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.code, 143);
       assert.equal(err.msg, 'A raw constraint was violated');
     }
+
+    await assertNotGracefulCleanup();
   })
 
   it('does not let maker submit a swap for which they have insufficient funds', async () => {
@@ -285,6 +297,8 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.message, 'failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1');
       assert.equal(err.logs[11], 'Program log: Error: insufficient funds');
     }
+
+    await assertGracefulCleanup();
   })
 
   it('does not let taker accept a swap for which they have insufficient funds', async () => {
@@ -329,6 +343,8 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.message, 'failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1');
       assert.equal(err.logs[3], 'Program log: Error: insufficient funds');
     }
+
+    await assertNotGracefulCleanup();
   })
 
   it('does not let taker send tokens to an ATA which maker does not own', async () => {
@@ -385,5 +401,7 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.code, 149);
       assert.equal(err.msg, 'An associated constraint was violated');
     }
+
+    await assertNotGracefulCleanup();
   })
 });

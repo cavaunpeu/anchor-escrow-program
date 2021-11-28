@@ -330,4 +330,60 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.logs[3], 'Program log: Error: insufficient funds');
     }
   })
+
+  it('does not let taker send tokens to an ATA which maker does not own', async () => {
+    await program.rpc.submit(
+      escrowAccountBump,
+      new anchor.BN(fooCoinAmount),
+      new anchor.BN(barCoinAmount),
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          maker: wallet.publicKey,
+          fooCoinMint: fooCoinMint.publicKey,
+          barCoinMint: barCoinMint.publicKey,
+          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          escrowAccount: escrowAccount,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId,
+        },
+        signers: [swapState]
+      }
+    );
+
+    // Create rando keypair.
+    const rando = anchor.web3.Keypair.generate();
+    // Create BarCoin ATA for rando.
+    const randoBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(rando.publicKey);
+    // Mint BarCoins to rando.
+    await barCoinMint.mintTo(
+      randoBarCoinTokenAccount,
+      wallet.publicKey,
+      [],
+      100
+    );
+
+    try {
+      await program.rpc.accept(
+        {
+          accounts: {
+            swapState: swapState.publicKey,
+            makerBarCoinTokenAccount: randoBarCoinTokenAccount,  // not owned by maker!
+            takerBarCoinTokenAccount: takerBarCoinTokenAccount,
+            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            escrowAccount: escrowAccount,
+            maker: wallet.publicKey,
+            taker: taker.publicKey,
+            fooCoinMint: fooCoinMint.publicKey,
+            tokenProgram: spl.TOKEN_PROGRAM_ID,
+          },
+          signers: [taker]
+        }
+      );
+    } catch (err) {
+      assert.equal(err.code, 149);
+      assert.equal(err.msg, 'An associated constraint was violated');
+    }
+  })
 });

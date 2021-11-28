@@ -93,7 +93,7 @@ pub struct Submit<'info> {
 
 #[derive(Accounts)]
 pub struct Accept<'info> {
-    #[account(constraint = swap_state.maker == *maker.key)]
+    #[account(mut, constraint = swap_state.maker == *maker.key, close = maker)]
     pub swap_state: Account<'info, SwapState>,
     #[account(mut, constraint = maker_bar_coin_token_account.mint == swap_state.bar_coin_mint)]
     pub maker_bar_coin_token_account: Account<'info, TokenAccount>,

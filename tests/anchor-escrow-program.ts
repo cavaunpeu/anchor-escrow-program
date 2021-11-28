@@ -74,7 +74,7 @@ describe('anchor-escrow-program', () => {
     );
   });
 
-  it('it lets maker submit and taker accept a transaction', async () => {
+  it('lets maker submit and taker accept a transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -134,7 +134,7 @@ describe('anchor-escrow-program', () => {
 
   });
 
-  it('it lets maker submit and maker cancel transaction', async () => {
+  it('lets maker submit and maker cancel transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -197,7 +197,7 @@ describe('anchor-escrow-program', () => {
     }
   });
 
-  it('it does not let taker send the wrong kind of tokens', async () => {
+  it('does not let taker send the wrong kind of tokens', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -260,7 +260,7 @@ describe('anchor-escrow-program', () => {
     }
   })
 
-  it('it does not let maker submit a swap for which they have insufficient funds', async () => {
+  it('does not let maker submit a swap for which they have insufficient funds', async () => {
     try {
       await program.rpc.submit(
         escrowAccountBump,
@@ -287,7 +287,7 @@ describe('anchor-escrow-program', () => {
     }
   })
 
-  it('it does not let taker accept a swap for which they have insufficient funds', async () => {
+  it('does not let taker accept a swap for which they have insufficient funds', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),

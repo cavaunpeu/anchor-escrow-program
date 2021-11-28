@@ -174,5 +174,26 @@ describe('anchor-escrow-program', () => {
     assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
     assert.equal(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
 
+    try {
+      await program.rpc.accept(
+        {
+          accounts: {
+            swapState: swapState.publicKey,
+            makerBarCoinTokenAccount: makerBarCoinTokenAccount,
+            takerBarCoinTokenAccount: takerBarCoinTokenAccount,
+            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            escrowAccount: escrowAccount,
+            maker: wallet.publicKey,
+            taker: taker.publicKey,
+            fooCoinMint: fooCoinMint.publicKey,
+            tokenProgram: spl.TOKEN_PROGRAM_ID,
+          },
+          signers: [taker]
+        }
+      );
+    } catch (err) {
+      assert.equal(err.code, 167);
+      assert.equal(err.msg, 'The given account is not owned by the executing program');
+    }
   });
 });

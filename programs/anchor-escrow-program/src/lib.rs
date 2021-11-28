@@ -142,7 +142,11 @@ pub struct Submit<'info> {
 pub struct Accept<'info> {
     #[account(mut, constraint = swap_state.maker == *maker.key, close = maker)]
     pub swap_state: Account<'info, SwapState>,
-    #[account(mut, constraint = maker_bar_coin_token_account.mint == swap_state.bar_coin_mint)]
+    #[account(
+        mut,
+        associated_token::mint = swap_state.bar_coin_mint,
+        associated_token::authority = maker
+    )]
     pub maker_bar_coin_token_account: Account<'info, TokenAccount>,
     #[account(mut, constraint = taker_bar_coin_token_account.mint == swap_state.bar_coin_mint)]
     pub taker_bar_coin_token_account: Account<'info, TokenAccount>,

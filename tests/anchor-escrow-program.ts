@@ -28,7 +28,7 @@ describe('anchor-escrow-program', () => {
   const fooCoinAmount = 10;
   const barCoinAmount = 22;
 
-  before(async () => {
+  beforeEach(async () => {
     // Create FooCoin mint.
     fooCoinMint = await spl.Token.createMint(
       program.provider.connection,
@@ -171,8 +171,8 @@ describe('anchor-escrow-program', () => {
       (await fooCoinMint.getAccountInfo(makerFooCoinTokenAccount)).amount.toNumber(),
       makerFooCoinTokenAccountInitialAmount
     );
-    assert.equal(null, program.provider.connection.getAccountInfo(escrowAccount));
-    assert.equal(null, program.provider.connection.getAccountInfo(swapState.publicKey));
+    assert.equal(null, await program.provider.connection.getAccountInfo(escrowAccount));
+    assert.equal(null, await program.provider.connection.getAccountInfo(swapState.publicKey));
 
   });
 });

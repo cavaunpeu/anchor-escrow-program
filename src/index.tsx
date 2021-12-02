@@ -1,14 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Description, Header} from './components'
+import App from './App';
 import '../css/tailwind.css';
 
 ReactDOM.render(
   <React.StrictMode>
-    <div className="bg-gray-800 p-8">
-        <Header />
-        <Description />
-    </div>
+    <App />
   </React.StrictMode>,
   document.getElementById('root')
 );

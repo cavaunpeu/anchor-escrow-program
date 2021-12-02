@@ -5,28 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
-    <link rel="stylesheet" href="/css/tailwind.css">
 </head>
-<body class="bg-gray-800 p-8">
-    <header>
-        <nav class="flex text-indigo-300">
-            <p class="text-indigo-100 text-4xl font-mono">Anchor Escrow Program</p>
-            <ul class="flex self-center justify-end flex-grow uppercase text-2xl font-mono">
-                <li class="pl-8 hover:text-indigo-200 cursor-pointer">Code</li>
-                <li class="pl-8 hover:text-indigo-200 cursor-pointer">Author</li>
-            </ul>
-        </nav>
-    </header>
-    <div class="flex flex-col justify-center h-screen max-w-screen-lg w-2/5 text-indigo-100 text-2xl font-mono leading-loose">
-        <p>
-            In an escrow, <span class="text-indigo-300">Will</span> wants to exchange <span class="text-pink-300">FooCoins</span> for <span class="text-indigo-300">Alan's</span> <span class="text-pink-300">BarCoins</span>.
-
-            To do so, <span class="text-indigo-300">Will</span> sends his <span class="text-pink-300">FooCoins</span> to a neutral "escrow" account.
-
-            Once his coins have arrived, <span class="text-indigo-300">Alan</span> sends his <span class="text-pink-300">BarCoins</span> to <span class="text-indigo-300">Will</span>, and the escrow sends its <span class="text-pink-300">FooCoins</span> to <span class="text-indigo-300">Alan</span>.
-
-            Both transactions are atomic: if anything goes wrong, they are rolled back.
-        </p>
-    </div>
+<body>
+    <div id="root"></div>
+    <script type="module" src="./src/index.tsx"></script>
 </body>
 </html>

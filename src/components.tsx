@@ -30,8 +30,48 @@ const Header = () => {
     )
 }
 
-class EscrowProgram extends React.Component<any> {
+type EscrowProgramState = {
+    submitButtonClicked: boolean,
+    acceptButtonClicked: boolean,
+}
+
+class EscrowProgram extends React.Component<{}, EscrowProgramState> {
+
+    unclickedIxButtonClassName = 'bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl';
+    clickedIxButtonClassName = 'bg-indigo-600 shadow-2xl text-gray-800 rounded-2xl h-16 text-2xl';
+    initialState = {
+        submitButtonClicked: false,
+        acceptButtonClicked: false
+    }
+
+    constructor(props) {
+        super(props);
+        this.state = {
+            ...this.initialState
+        }
+    }
+
+    handleIxButtonClick(buttonName) {
+        this.setState({
+            ...this.state,
+            [buttonName + 'Clicked']: true
+        })
+    }
+
+    handleResetButtonClick() {
+        this.setState({
+            ...this.initialState
+        })
+    }
+
     render() {
+        const submitButtonClassName = this.state.submitButtonClicked ?
+                                      this.clickedIxButtonClassName :
+                                      this.unclickedIxButtonClassName;
+        const acceptButtonClassName = this.state.acceptButtonClicked ?
+                                      this.clickedIxButtonClassName :
+                                      this.unclickedIxButtonClassName;
+
         return (
             <div className='flex flex-col justify-start h-screen w-full font-mono'>
                 <section className="antialiased text-gray-600">
@@ -169,9 +209,9 @@ class EscrowProgram extends React.Component<any> {
                         <div className="w-full mx-auto">
                             <div className="overflow-x-auto">
                                 <div className='grid grid-cols-3 gap-12'>
-                                    <button className='bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl'>Submit</button>
-                                    <button className='bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl'>Accept</button>
-                                    <button className='bg-pink-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl'>Reset</button>
+                                    <button className={submitButtonClassName} onClick={() => this.handleIxButtonClick('submitButton')}>Submit</button>
+                                    <button className={acceptButtonClassName} onClick={() => {if (this.state.submitButtonClicked) {this.handleIxButtonClick('acceptButton')}}}>Accept</button>
+                                    <button className='bg-pink-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl' onClick={() => this.handleResetButtonClick()}>Reset</button>
                                 </div>
                             </div>
                         </div>

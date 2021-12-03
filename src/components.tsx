@@ -42,7 +42,7 @@ type EscrowProgramState = {
 class EscrowProgram extends React.Component<{}, EscrowProgramState> {
 
     unclickedIxButtonClassName = 'bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl';
-    clickedIxButtonClassName = 'bg-indigo-600 shadow-2xl text-gray-800 rounded-2xl h-16 text-2xl';
+    clickedIxButtonClassName = 'bg-gray-600 shadow-2xl text-gray-800 rounded-2xl h-16 text-2xl';
     inputClassName = 'text-left w-full font-extrabold h-10 text-2xl border-solid border-2 border-indigo-600 rounded-lg p-2';
     initialState = {
         submitButtonClicked: false,
@@ -113,7 +113,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="text-sm divide-y divide-gray-100">
+                                        <tbody className="text-md divide-y divide-gray-100">
                                             <tr>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">
@@ -185,7 +185,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="text-sm divide-y divide-gray-100">
+                                        <tbody className="text-md divide-y divide-gray-100">
                                             <tr>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">

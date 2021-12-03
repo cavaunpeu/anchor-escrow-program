@@ -33,9 +33,9 @@ const Header = () => {
 class EscrowProgram extends React.Component<any> {
     render() {
         return (
-            <div className='flex flex-col justify-center h-full w-full font-mono'>
-                <section className="antialiased text-gray-600 h-screen">
-                    <div className="flex flex-col justify-center h-full">
+            <div className='flex flex-col justify-evenly h-full w-full font-mono'>
+                <section className="antialiased text-gray-600">
+                    <div className="flex flex-col">
                         <div className="w-full max-w-2xl mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-200">
                             <header className="px-5 py-4 border-b border-gray-100">
                                 <h2 className="font-semibold text-gray-800">Account Balances</h2>
@@ -106,8 +106,8 @@ class EscrowProgram extends React.Component<any> {
                         </div>
                     </div>
                 </section>
-                <section className="antialiased text-gray-600 h-screen">
-                    <div className="flex flex-col justify-center h-full">
+                <section className="antialiased text-gray-600">
+                    <div className="flex flex-col">
                         <div className="w-full max-w-2xl mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-200">
                             <header className="px-5 py-4 border-b border-gray-100">
                                 <h2 className="font-semibold text-gray-800">Escrow Terms</h2>
@@ -164,8 +164,8 @@ class EscrowProgram extends React.Component<any> {
                         </div>
                     </div>
                 </section>
-                <section className="antialiased text-gray-600 h-screen">
-                    <div className="flex flex-col justify-center h-full">
+                <section className="antialiased text-gray-600">
+                    <div className="flex flex-col">
                         <div className="w-full max-w-2xl mx-auto">
                             <div className="p-3">
                                 <div className="overflow-x-auto">

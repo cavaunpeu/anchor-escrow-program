@@ -102,10 +102,10 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                     <table className="table-fixed w-full justify-center align-middle self-center">
                                         <thead className="text-xs font-extrabold uppercase text-gray-400">
                                             <tr>
-                                                <th className="p-2 whitespace-nowrap w-5/12">
+                                                <th className="p-2 whitespace-nowrap">
                                                     <div className="font-semibold text-left">Account</div>
                                                 </th>
-                                                <th className="p-2 whitespace-nowrap w-5/12">
+                                                <th className="p-2 whitespace-nowrap">
                                                     <div className="font-semibold text-left">Coin</div>
                                                 </th>
                                                 <th className="p-2 whitespace-nowrap">
@@ -174,10 +174,10 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                     <table className="table-fixed w-full justify-center align-middle self-center">
                                         <thead className="text-xs font-extrabold uppercase text-gray-400">
                                             <tr>
-                                                <th className="p-2 whitespace-nowrap w-5/12">
+                                                <th className="p-2 whitespace-nowrap">
                                                     <div className="font-semibold text-left">Account</div>
                                                 </th>
-                                                <th className="p-2 whitespace-nowrap w-5/12">
+                                                <th className="p-2 whitespace-nowrap">
                                                     <div className="font-semibold text-left">Coin</div>
                                                 </th>
                                                 <th className="p-2 whitespace-nowrap">

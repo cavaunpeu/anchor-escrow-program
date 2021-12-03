@@ -4,11 +4,11 @@
 
 @layer components {
     .unclicked-ix-button {
-        @apply bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl
+        @apply bg-indigo-300 shadow-2xl hover:text-indigo-50 rounded-2xl h-16 text-2xl
     }
 
     .clicked-ix-button {
-        @apply bg-gray-600 shadow-2xl text-gray-800 rounded-2xl h-16 text-2xl
+        @apply bg-gray-600 shadow-2xl rounded-2xl h-16 text-2xl
     }
 
     .input-field {

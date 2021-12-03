@@ -33,6 +33,8 @@ const Header = () => {
 type EscrowProgramState = {
     submitButtonClicked: boolean,
     acceptButtonClicked: boolean,
+    willFooCoinBalance: number,
+    alanBarCoinBalance: number,
     fooCoinAmount: number,
     barCoinAmount: number,
 }
@@ -45,6 +47,8 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
     initialState = {
         submitButtonClicked: false,
         acceptButtonClicked: false,
+        willFooCoinBalance: 100,
+        alanBarCoinBalance: 100,
         fooCoinAmount: null,
         barCoinAmount: null,
     }
@@ -71,12 +75,10 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
 
     updateCoinAmount(event, coinAmount) {
         let amount = event.target.value;
-        if (amount) {
-            this.setState({
-                ...this.state,
-                [coinAmount]: Number(amount)
-            })
-        }
+        this.setState({
+            ...this.state,
+            [coinAmount]: amount ? Number(amount) : null
+        })
     }
 
     render() {
@@ -123,7 +125,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                     <div className="text-left">FooCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-green-500 text-2xl">100</div>
+                                                    <div className="text-left font-medium text-green-500 text-2xl">{this.state.willFooCoinBalance}</div>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -137,7 +139,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                     <div className="text-left">BarCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-green-500 text-2xl">100</div>
+                                                    <div className="text-left font-medium text-green-500 text-2xl">{this.state.alanBarCoinBalance}</div>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -196,9 +198,10 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </td>
                                                 <td className='p-2'>
                                                     <input
+                                                        placeholder={'max: ' + this.state.willFooCoinBalance}
                                                         value={this.state.fooCoinAmount || ''}
                                                         onChange={(event) => this.updateCoinAmount(event, 'fooCoinAmount')}
-                                                        className={this.inputClassName}
+                                                        className={this.state.fooCoinAmount ? this.inputClassName : this.inputClassName}
                                                     />
                                                 </td>
                                             </tr>
@@ -214,6 +217,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <input
+                                                        placeholder={'max: ' + this.state.alanBarCoinBalance}
                                                         value={this.state.barCoinAmount || ''}
                                                         onChange={(event) => this.updateCoinAmount(event, 'barCoinAmount')}
                                                         className={this.inputClassName}

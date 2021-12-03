@@ -101,9 +101,15 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
         const submitButtonClassName = this.state.submitButtonClicked ?
                                       this.clickedIxButtonClassName :
                                       this.unclickedIxButtonClassName;
-        const acceptButtonClassName = this.state.acceptButtonClicked ?
-                                      this.clickedIxButtonClassName :
-                                      this.unclickedIxButtonClassName;
+
+        let acceptButtonClassName: string;
+        if (this.state.submitButtonClicked) {
+            acceptButtonClassName = this.state.acceptButtonClicked ?
+                                          this.clickedIxButtonClassName :
+                                          this.unclickedIxButtonClassName;
+        } else {
+            acceptButtonClassName = this.clickedIxButtonClassName;
+        };
 
         return (
             <div className='flex flex-col justify-start h-screen w-full font-mono'>

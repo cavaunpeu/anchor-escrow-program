@@ -33,15 +33,20 @@ const Header = () => {
 type EscrowProgramState = {
     submitButtonClicked: boolean,
     acceptButtonClicked: boolean,
+    fooCoinAmount: number,
+    barCoinAmount: number,
 }
 
 class EscrowProgram extends React.Component<{}, EscrowProgramState> {
 
     unclickedIxButtonClassName = 'bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl';
     clickedIxButtonClassName = 'bg-indigo-600 shadow-2xl text-gray-800 rounded-2xl h-16 text-2xl';
+    inputClassName = 'text-left w-full font-extrabold h-10 text-2xl border-solid border-2 border-indigo-600 rounded-lg p-2';
     initialState = {
         submitButtonClicked: false,
-        acceptButtonClicked: false
+        acceptButtonClicked: false,
+        fooCoinAmount: null,
+        barCoinAmount: null,
     }
 
     constructor(props) {
@@ -62,6 +67,16 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
         this.setState({
             ...this.initialState
         })
+    }
+
+    updateCoinAmount(event, coinAmount) {
+        let amount = event.target.value;
+        if (amount) {
+            this.setState({
+                ...this.state,
+                [coinAmount]: Number(amount)
+            })
+        }
     }
 
     render() {
@@ -180,7 +195,11 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                     <div className="text-left">FooCoins</div>
                                                 </td>
                                                 <td className='p-2'>
-                                                    <input className="text-left w-full font-extrabold h-10 text-2xl border-solid border-2 border-indigo-600 rounded-lg p-2"/>
+                                                    <input
+                                                        value={this.state.fooCoinAmount || ''}
+                                                        onChange={(event) => this.updateCoinAmount(event, 'fooCoinAmount')}
+                                                        className={this.inputClassName}
+                                                    />
                                                 </td>
                                             </tr>
                                             <tr>
@@ -194,7 +213,11 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                     <div className="text-left">BarCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <input className="text-left w-full font-extrabold h-10 text-2xl border-solid border-2 border-indigo-600 rounded-lg p-2"/>
+                                                    <input
+                                                        value={this.state.barCoinAmount || ''}
+                                                        onChange={(event) => this.updateCoinAmount(event, 'barCoinAmount')}
+                                                        className={this.inputClassName}
+                                                    />
                                                 </td>
                                             </tr>
                                         </tbody>

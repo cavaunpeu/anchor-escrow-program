@@ -252,12 +252,10 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                 <section className="antialiased text-gray-600 pt-8">
                     <div className="flex flex-col">
                         <div className="w-full mx-auto">
-                            <div className="overflow-x-auto">
-                                <div className='grid grid-cols-3 gap-12 text-gray-900'>
-                                    <button className={submitButtonClassName} onClick={() => this.handleIxButtonClick('submit')}>Submit</button>
-                                    <button className={acceptButtonClassName} onClick={() => {if (this.state.submitButtonClicked) {this.handleIxButtonClick('accept')}}}>Accept</button>
-                                    <button className='unclicked-ix-button bg-pink-300' onClick={() => this.handleResetButtonClick()}>Reset</button>
-                                </div>
+                            <div className='grid grid-cols-3 gap-12 text-gray-900'>
+                                <button className={submitButtonClassName} onClick={() => this.handleIxButtonClick('submit')}>Submit</button>
+                                <button className={acceptButtonClassName} onClick={() => {if (this.state.submitButtonClicked) {this.handleIxButtonClick('accept')}}}>Accept</button>
+                                <button className='reset-button' onClick={() => this.handleResetButtonClick()}>Reset</button>
                             </div>
                         </div>
                     </div>

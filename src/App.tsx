@@ -9,7 +9,7 @@ const App = () => {
                 <div className='flex flex-col justify-start w-3/5 px-24'>
                     <EscrowProgram />
                 </div>
-                <div className='flex flex-col justify-start w-2/5 pr-8'>
+                <div className='flex flex-col justify-start w-2/5 pr-24'>
                     <Description />
                 </div>
             </div>

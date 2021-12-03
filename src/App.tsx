@@ -5,10 +5,12 @@ const App = () => {
     return (
         <div className="bg-gray-800 p-8">
             <Header />
-            <div className='flex justify-between'>
-                <Description />
-                <div className='flex flex-col w-3/5 h-screen justify-center'>
+            <div className='flex flex-row h-screen py-20'>
+                <div className='flex flex-col justify-start w-3/5 px-16'>
                     <EscrowProgram />
+                </div>
+                <div className='flex flex-col justify-start w-2/5 px-16'>
+                    <Description />
                 </div>
             </div>
         </div>

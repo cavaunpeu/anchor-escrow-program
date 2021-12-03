@@ -2,7 +2,7 @@ import React from 'react';
 
 const Description = () => {
     return (
-        <div className="flex flex-col justify-center h-screen max-w-screen-lg w-2/5 text-indigo-100 text-2xl font-mono leading-loose">
+        <div className="text-indigo-100 text-2xl font-mono leading-loose">
             <p>
                 In an escrow, <span className="text-indigo-300">Will</span> wants to exchange <span className="text-pink-300">FooCoins</span> for <span className="text-indigo-300">Alan's</span> <span className="text-pink-300">BarCoins</span>.
 
@@ -33,10 +33,10 @@ const Header = () => {
 class EscrowProgram extends React.Component<any> {
     render() {
         return (
-            <div className='flex flex-col justify-evenly h-full w-full font-mono'>
+            <div className='flex flex-col justify-start h-screen w-full font-mono'>
                 <section className="antialiased text-gray-600">
                     <div className="flex flex-col">
-                        <div className="w-full max-w-2xl mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-200">
+                        <div className="w-full mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-600">
                             <header className="px-5 py-4 border-b border-gray-100">
                                 <h2 className="font-semibold text-gray-800">Account Balances</h2>
                             </header>
@@ -68,7 +68,7 @@ class EscrowProgram extends React.Component<any> {
                                                     <div className="text-left">FooCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-green-500">100</div>
+                                                    <div className="text-left font-medium text-green-500 text-2xl">100</div>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -82,7 +82,7 @@ class EscrowProgram extends React.Component<any> {
                                                     <div className="text-left">BarCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-green-500">100</div>
+                                                    <div className="text-left font-medium text-green-500 text-2xl">100</div>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -96,7 +96,7 @@ class EscrowProgram extends React.Component<any> {
                                                     <div className="text-left">FooCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium">0</div>
+                                                    <div className="text-left font-medium text-2xl">0</div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -106,9 +106,9 @@ class EscrowProgram extends React.Component<any> {
                         </div>
                     </div>
                 </section>
-                <section className="antialiased text-gray-600">
+                <section className="antialiased text-gray-600 pt-8">
                     <div className="flex flex-col">
-                        <div className="w-full max-w-2xl mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-200">
+                        <div className="w-full mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-600">
                             <header className="px-5 py-4 border-b border-gray-100">
                                 <h2 className="font-semibold text-gray-800">Escrow Terms</h2>
                             </header>
@@ -140,7 +140,7 @@ class EscrowProgram extends React.Component<any> {
                                                     <div className="text-left">FooCoins</div>
                                                 </td>
                                                 <td className='p-2'>
-                                                    <input className="text-left w-full font-extrabold h-8 border-solid border-2 border-indigo-600 rounded-lg"/>
+                                                    <input className="text-left w-full font-extrabold h-10 text-2xl border-solid border-2 border-indigo-600 rounded-lg p-2"/>
                                                 </td>
                                             </tr>
                                             <tr>
@@ -154,7 +154,7 @@ class EscrowProgram extends React.Component<any> {
                                                     <div className="text-left">BarCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <input className="text-left w-full font-extrabold h-8 border-solid border-2 border-indigo-600 rounded-lg"/>
+                                                    <input className="text-left w-full font-extrabold h-10 text-2xl border-solid border-2 border-indigo-600 rounded-lg p-2"/>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -164,34 +164,19 @@ class EscrowProgram extends React.Component<any> {
                         </div>
                     </div>
                 </section>
-                <section className="antialiased text-gray-600">
+                <section className="antialiased text-gray-600 pt-8">
                     <div className="flex flex-col">
-                        <div className="w-full max-w-2xl mx-auto">
-                            <div className="p-3">
-                                <div className="overflow-x-auto">
-                                    <div className='grid grid-cols-3 gap-12'>
-                                        <button className='bg-indigo-300 text-gray-800 hover:text-indigo-50 border-2 rounded-lg h-16 text-2xl'>Submit</button>
-                                        <button className='bg-indigo-300 text-gray-800 hover:text-indigo-50 border-2 rounded-lg h-16 text-2xl'>Accept</button>
-                                        <button className='bg-pink-300 text-gray-800 hover:text-indigo-50 border-2 rounded-lg h-16 text-2xl'>Reset</button>
-                                    </div>
+                        <div className="w-full mx-auto">
+                            <div className="overflow-x-auto">
+                                <div className='grid grid-cols-3 gap-12'>
+                                    <button className='bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl'>Submit</button>
+                                    <button className='bg-indigo-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl'>Accept</button>
+                                    <button className='bg-pink-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl'>Reset</button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </section>
-            </div>
-        )
-    }
-}
-
-class AccountBalance extends React.Component<any> {
-    render() {
-        return (
-            <div>
-                <div className='text-3xl w-1/2'>
-                    <span className='text-pink-300'>{this.props.accountName}:</span>
-                    <span className='text-indigo-100'>{this.props.balance}</span>
-                </div>
             </div>
         )
     }

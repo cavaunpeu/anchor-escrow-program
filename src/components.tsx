@@ -60,11 +60,27 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
         }
     }
 
+    escrowValid() {
+        return (
+            (
+                Boolean(this.state.fooCoinAmount) && (this.state.fooCoinAmount <= this.state.willFooCoinBalance)
+            ) && (
+                Boolean(this.state.barCoinAmount) && (this.state.barCoinAmount <= this.state.alanBarCoinBalance)
+            )
+        )
+    }
+
     handleIxButtonClick(buttonName) {
-        this.setState({
-            ...this.state,
-            [buttonName + 'Clicked']: true
-        })
+        if (this.escrowValid()) {
+            this.setState({
+                ...this.state,
+                [buttonName + 'ButtonClicked']: true
+            })
+        } else {
+            this.setState({
+                ...this.initialState,
+            })
+        }
     }
 
     handleResetButtonClick() {
@@ -236,8 +252,8 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                         <div className="w-full mx-auto">
                             <div className="overflow-x-auto">
                                 <div className='grid grid-cols-3 gap-12'>
-                                    <button className={submitButtonClassName} onClick={() => this.handleIxButtonClick('submitButton')}>Submit</button>
-                                    <button className={acceptButtonClassName} onClick={() => {if (this.state.submitButtonClicked) {this.handleIxButtonClick('acceptButton')}}}>Accept</button>
+                                    <button className={submitButtonClassName} onClick={() => this.handleIxButtonClick('submit')}>Submit</button>
+                                    <button className={acceptButtonClassName} onClick={() => {if (this.state.submitButtonClicked) {this.handleIxButtonClick('accept')}}}>Accept</button>
                                     <button className='bg-pink-300 shadow-2xl text-gray-800 hover:text-indigo-50 rounded-2xl h-16 text-2xl' onClick={() => this.handleResetButtonClick()}>Reset</button>
                                 </div>
                             </div>

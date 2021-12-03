@@ -3,16 +3,16 @@
 @tailwind utilities;
 
 @layer components {
-    .unclicked-ix-button {
+    .valid-ix-button {
         @apply bg-indigo-300 shadow-2xl hover:text-indigo-50 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-indigo-300 h-16 text-2xl
     }
 
-    .clicked-ix-button {
+    .invalid-ix-button {
         @apply bg-gray-700 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-gray-700 h-16 text-2xl
     }
 
     .reset-button {
-        @apply unclicked-ix-button bg-pink-300 ring-pink-300
+        @apply valid-ix-button bg-pink-300 ring-pink-300
     }
 
     .input-field {

@@ -220,6 +220,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </td>
                                                 <td className='p-2'>
                                                     <input
+                                                        disabled={this.state.submitButtonClicked}
                                                         placeholder={'max: ' + this.state.willFooCoinBalance}
                                                         value={this.state.fooCoinAmount || ''}
                                                         onChange={(event) => this.updateCoinAmount(event, 'fooCoinAmount')}
@@ -239,6 +240,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <input
+                                                        disabled={this.state.submitButtonClicked}
                                                         placeholder={'max: ' + this.state.alanBarCoinBalance}
                                                         value={this.state.barCoinAmount || ''}
                                                         onChange={(event) => this.updateCoinAmount(event, 'barCoinAmount')}

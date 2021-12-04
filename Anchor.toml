@@ -1,5 +1,5 @@
 [programs.localnet]
-anchor_escrow_program = "Fg6PaFpoGXkYsidMpWTK6W2BeZ7FEfcYkg476zPFsLnS"
+anchor_escrow_program = "Bt4LgWEnBfegteNdgErSK4GfD5aXzQxrTAfNhkT1Et2i"
 
 [registry]
 url = "https://anchor.projectserum.com"

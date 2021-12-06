@@ -3,7 +3,7 @@ import React from 'react';
 const Description = () => {
     return (
         <div className="text-indigo-100 text-2xl font-mono leading-loose">
-            <p>
+            <p className='pb-12'>
                 In an escrow, <span className="text-indigo-300">Will</span> wants to exchange <span className="text-pink-300">FooCoins</span> for <span className="text-indigo-300">Alan's</span> <span className="text-pink-300">BarCoins</span>.
 
                 To do so, <span className="text-indigo-300">Will</span> sends his <span className="text-pink-300">FooCoins</span> to a neutral "escrow" account.
@@ -12,6 +12,10 @@ const Description = () => {
 
                 Both transactions are atomic: if anything goes wrong, they are rolled back.
             </p>
+            <p className='pb-4'>Instructions:</p>
+            <p className='pl-4'>1. Specify FooCoins and BarCoins amounts.</p>
+            <p className='pl-4'>2. Press Submit.</p>
+            <p className='pl-4'>2. Press Accept.</p>
         </div>
     )
 }
@@ -100,16 +104,16 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
 
         return (
             <div className='flex flex-col justify-start h-screen w-full font-mono'>
-                <section className="antialiased text-gray-600">
+                <section className="antialiased text-light-gray">
                     <div className="flex flex-col">
-                        <div className="w-full mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-600">
-                            <header className="px-5 py-4 border-b border-gray-100">
-                                <h2 className="font-semibold text-gray-800">Account Balances</h2>
+                        <div className="w-full mx-auto bg-dark-grey shadow-2xl rounded-2xl border border-gray-600">
+                            <header className="px-5 py-4 border-b border-light-gray">
+                                <h2 className="font-semibold">Account Balances</h2>
                             </header>
                             <div className="p-3">
                                 <div className="overflow-x-auto">
                                     <table className="table-fixed w-full justify-center align-middle self-center">
-                                        <thead className="text-xs font-extrabold uppercase text-gray-400">
+                                        <thead className="text-xs font-extrabold uppercase">
                                             <tr>
                                                 <th className="p-2 whitespace-nowrap">
                                                     <div className="font-semibold text-left">Account</div>
@@ -122,47 +126,47 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="text-md divide-y divide-gray-100">
+                                        <tbody className="text-md divide-y divide-light-gray text-light-gray text-left font-medium">
                                             <tr>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-05.jpg" width="40" height="40" alt="Will"></img></div>
-                                                        <div className="font-medium text-gray-800">Will</div>
+                                                        <div>Will</div>
                                                     </div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left">FooCoins</div>
+                                                    <div>FooCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-green-500 text-2xl">{this.state.willFooCoinBalance}</div>
+                                                    <div className="text-green-500 text-2xl">{this.state.willFooCoinBalance}</div>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-06.jpg" width="40" height="40" alt="Alan"></img></div>
-                                                        <div className="font-medium text-gray-800">Alan</div>
+                                                        <div>Alan</div>
                                                     </div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left">BarCoins</div>
+                                                    <div>BarCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-green-500 text-2xl">{this.state.alanBarCoinBalance}</div>
+                                                    <div className="text-green-500 text-2xl">{this.state.alanBarCoinBalance}</div>
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-09.jpg" width="40" height="40" alt="Escrow"></img></div>
-                                                        <div className="font-medium text-gray-800">Escrow</div>
+                                                        <div>Escrow</div>
                                                     </div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left">FooCoins</div>
+                                                    <div>FooCoins</div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
-                                                    <div className="text-left font-medium text-2xl">0</div>
+                                                    <div className="text-2xl">0</div>
                                                 </td>
                                             </tr>
                                         </tbody>
@@ -172,16 +176,16 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                         </div>
                     </div>
                 </section>
-                <section className="antialiased text-gray-600 pt-8">
+                <section className="antialiased pt-8 text-light-gray">
                     <div className="flex flex-col">
-                        <div className="w-full mx-auto bg-indigo-50 shadow-2xl rounded-2xl border border-gray-600">
-                            <header className="px-5 py-4 border-b border-gray-100">
-                                <h2 className="font-semibold text-gray-800">Escrow Terms</h2>
+                        <div className="w-full mx-auto bg-dark-grey shadow-2xl rounded-2xl border border-gray-600">
+                            <header className="px-5 py-4 border-b border-light-gray">
+                                <h2 className="font-semibold">Escrow Terms</h2>
                             </header>
                             <div className="p-3">
                                 <div className="overflow-x-auto">
                                     <table className="table-fixed w-full justify-center align-middle self-center">
-                                        <thead className="text-xs font-extrabold uppercase text-gray-400">
+                                        <thead className="text-xs font-extrabold uppercase">
                                             <tr>
                                                 <th className="p-2 whitespace-nowrap">
                                                     <div className="font-semibold text-left">Account</div>
@@ -194,24 +198,24 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody className="text-md divide-y divide-gray-100">
+                                        <tbody className="text-md divide-y divide-light-gray font-medium">
                                             <tr>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-05.jpg" width="40" height="40" alt="Will"></img></div>
-                                                        <div className="font-medium text-gray-800">Will</div>
+                                                        <div>Will</div>
                                                     </div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="text-left">FooCoins</div>
                                                 </td>
-                                                <td className='p-2'>
+                                                <td className="p-2 whitespace-nowrap">
                                                     <input
                                                         disabled={this.state.submitButtonClicked}
                                                         placeholder={'max: ' + this.state.willFooCoinBalance}
                                                         value={this.state.fooCoinAmount || ''}
                                                         onChange={(event) => this.updateCoinAmount(event, 'fooCoinAmount')}
-                                                        className='input-field'
+                                                        className='input-field bg-dark-grey'
                                                     />
                                                 </td>
                                             </tr>
@@ -219,7 +223,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                 <td className="p-2 whitespace-nowrap">
                                                     <div className="flex items-center">
                                                         <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-06.jpg" width="40" height="40" alt="Alan"></img></div>
-                                                        <div className="font-medium text-gray-800">Alan</div>
+                                                        <div className="font-medium">Alan</div>
                                                     </div>
                                                 </td>
                                                 <td className="p-2 whitespace-nowrap">
@@ -231,7 +235,7 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
                                                         placeholder={'max: ' + this.state.alanBarCoinBalance}
                                                         value={this.state.barCoinAmount || ''}
                                                         onChange={(event) => this.updateCoinAmount(event, 'barCoinAmount')}
-                                                        className='input-field'
+                                                        className='input-field bg-dark-grey'
                                                     />
                                                 </td>
                                             </tr>

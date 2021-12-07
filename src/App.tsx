@@ -1,9 +1,7 @@
 import React from 'react';
 import {Description, Header, EscrowProgram} from './components'
-import Client from './client';
 
 const App = () => {
-    <Client />
     return (
         <div className="bg-gray-800 p-8">
             <Header />

@@ -34,7 +34,7 @@ const Header = () => {
     )
 }
 
-type EscrowProgramState = {
+type UserInterfaceState = {
     submitButtonClicked: boolean,
     acceptButtonClicked: boolean,
     willFooCoinBalance: number,
@@ -43,7 +43,7 @@ type EscrowProgramState = {
     barCoinAmount: number,
 }
 
-class EscrowProgram extends React.Component<{}, EscrowProgramState> {
+class UserInterface extends React.Component<{}, UserInterfaceState> {
 
     initialState = {
         submitButtonClicked: false,
@@ -262,4 +262,16 @@ class EscrowProgram extends React.Component<{}, EscrowProgramState> {
     }
 }
 
-export { Description, Header, EscrowProgram };
+export default () => (
+    <div className="bg-gray-800 p-8">
+        <Header />
+        <div className='flex flex-row h-screen py-20'>
+            <div className='flex flex-col justify-start w-3/5 px-24'>
+                <UserInterface />
+            </div>
+            <div className='flex flex-col justify-start w-2/5 pr-24'>
+                <Description />
+            </div>
+        </div>
+    </div>
+)

@@ -1822,7 +1822,12 @@
   "resolved" "https://registry.npmjs.org/@solana/wallet-adapter-phantom/-/wallet-adapter-phantom-0.7.0.tgz"
   "version" "0.7.0"
 
-"@solana/wallet-adapter-react@^0.13.1":
+"@solana/wallet-adapter-react-ui@^0.6.1":
+  "integrity" "sha512-S2aZcHR+BBFMIjYoTWvs5vfEyckLzPOAbUY2CGEoOOR75q235WjBtO6I9ooh/bKFRD0OaGOwzgya4UtrkR5A6A=="
+  "resolved" "https://registry.npmjs.org/@solana/wallet-adapter-react-ui/-/wallet-adapter-react-ui-0.6.1.tgz"
+  "version" "0.6.1"
+
+"@solana/wallet-adapter-react@^0.13.0", "@solana/wallet-adapter-react@^0.13.1":
   "integrity" "sha512-Sk45AuOF8EgmR28zcib5NquvOwTpBlyDA8Iku1MVdXUQ9giA/tBwfJw21HIf1r+TVepg+V0xAP5FhP+MX0p6QQ=="
   "resolved" "https://registry.npmjs.org/@solana/wallet-adapter-react/-/wallet-adapter-react-0.13.1.tgz"
   "version" "0.13.1"

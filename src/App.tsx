@@ -2,6 +2,7 @@ import React, { FC } from 'react';
 import UserInterface from './components';
 import { WalletProvider, ConnectionProvider } from '@solana/wallet-adapter-react';
 import { getPhantomWallet } from '@solana/wallet-adapter-wallets';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 
 
 const App: FC = () => {
@@ -11,7 +12,9 @@ const App: FC = () => {
     return (
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
-                <UserInterface />
+                <WalletModalProvider>
+                    <UserInterface />
+                </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
     )

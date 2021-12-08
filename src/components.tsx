@@ -1,7 +1,23 @@
 import React, { FC, useState } from 'react';
-import {
-    useAnchorWallet, useConnection
-} from '@solana/wallet-adapter-react';
+import { useConnection, useWallet } from '@solana/wallet-adapter-react';
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+
+const Header: FC = () => {
+    return (
+        <header>
+            <nav className="flex items-center text-indigo-300">
+                <p className="text-indigo-100 text-4xl font-mono">Anchor Escrow Program</p>
+                <ul className="flex items-center justify-end flex-grow uppercase text-2xl font-mono">
+                    <li className="pl-8 hover:text-indigo-100 cursor-pointer">Code</li>
+                    <li className="pl-8 hover:text-indigo-100 cursor-pointer">Author</li>
+                    <li className="pl-8 ">
+                        <WalletMultiButton />
+                    </li>
+                </ul>
+            </nav>
+        </header>
+    )
+}
 
 const Description: FC = () => {
     return (
@@ -23,20 +39,6 @@ const Description: FC = () => {
     )
 }
 
-const Header: FC = () => {
-    return (
-        <header>
-            <nav className="flex text-indigo-300">
-                <p className="text-indigo-100 text-4xl font-mono">Anchor Escrow Program</p>
-                <ul className="flex self-center justify-end flex-grow uppercase text-2xl font-mono">
-                    <li className="pl-8 hover:text-indigo-100 cursor-pointer">Code</li>
-                    <li className="pl-8 hover:text-indigo-100 cursor-pointer">Author</li>
-                </ul>
-            </nav>
-        </header>
-    )
-}
-
 const UserInterface: FC = () => {
 
     const initialState = {
@@ -48,8 +50,6 @@ const UserInterface: FC = () => {
         barCoinAmount: 0,
     }
     const [state, setState] = useState(initialState);
-    const wallet = useAnchorWallet();
-    const connection = useConnection();
 
     function escrowValid(): boolean {
         return (

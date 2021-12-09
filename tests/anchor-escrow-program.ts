@@ -28,8 +28,7 @@ describe('anchor-escrow-program', () => {
   let escrowAccountBump: number;
   let swapState: anchor.web3.Keypair;
 
-  const makerFooCoinTokenAccountInitialAmount = 100;
-  const takerBarCoinTokenAccountInitialAmount = 100;
+  const initTokenBalance = 100;
   const fooCoinAmount = 10;
   const barCoinAmount = 22;
 
@@ -122,19 +121,24 @@ describe('anchor-escrow-program', () => {
         signers: [taker]
       }
     );
-    // // Mint FooCoin to maker and BarCoin to taker.
-    // await fooCoinMint.mintTo(
-    //   makerFooCoinTokenAccount,
-    //   wallet.publicKey,
-    //   [],
-    //   makerFooCoinTokenAccountInitialAmount
-    // );
-    // await barCoinMint.mintTo(
-    //   takerBarCoinTokenAccount,
-    //   wallet.publicKey,
-    //   [],
-    //   takerBarCoinTokenAccountInitialAmount
-    // );
+    // Mint FooCoins and BarCoins to maker and taker respectively.
+    await program.rpc.mintTokens(
+      fooCoinMintBump,
+      barCoinMintBump,
+      new anchor.BN(initTokenBalance),
+      {
+        accounts: {
+          fooCoinMint: fooCoinMint,
+          barCoinMint: barCoinMint,
+          makerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+          takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+          payer: payer,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId
+        }
+      }
+    );
     // Generate swap state address.
     // swapState = anchor.web3.Keypair.generate();
     // // Generate escrow account address (PDA).

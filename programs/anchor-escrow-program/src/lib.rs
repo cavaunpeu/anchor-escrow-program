@@ -28,6 +28,39 @@ pub mod anchor_escrow_program {
     ) -> ProgramResult {
         Ok(())
     }
+
+    pub fn mint_tokens(
+        ctx: Context<MintTokens>,
+        foo_coin_mint_bump: u8,
+        bar_coin_mint_bump: u8,
+        init_token_balance: u64
+    ) -> ProgramResult {
+        anchor_spl::token::mint_to(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                anchor_spl::token::MintTo {
+                    mint: ctx.accounts.foo_coin_mint.to_account_info(),
+                    to: ctx.accounts.maker_foo_coin_assoc_token_acct.to_account_info(),
+                    authority: ctx.accounts.foo_coin_mint.to_account_info(),
+                },
+                &[&[&[], &[foo_coin_mint_bump]]],
+            ),
+            init_token_balance
+        )?;
+        anchor_spl::token::mint_to(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                anchor_spl::token::MintTo {
+                    mint: ctx.accounts.bar_coin_mint.to_account_info(),
+                    to: ctx.accounts.taker_bar_coin_assoc_token_acct.to_account_info(),
+                    authority: ctx.accounts.bar_coin_mint.to_account_info(),
+                },
+                &[&[&[], &[bar_coin_mint_bump]]],
+            ),
+            init_token_balance
+        )?;
+        Ok(())
+    }
 }
     // pub fn submit(
     //     ctx: Context<Submit>,
@@ -212,6 +245,22 @@ pub struct InitializeTakerATAs<'info> {
     pub taker: Signer<'info>,
     pub token_program: Program<'info, Token>,
     pub associated_token_program: Program<'info, AssociatedToken>,
+    pub rent: Sysvar<'info, Rent>,
+    pub system_program: Program<'info, System>
+}
+
+#[derive(Accounts)]
+pub struct MintTokens<'info> {
+    #[account(mut)]
+    pub foo_coin_mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub bar_coin_mint: Account<'info, Mint>,
+    #[account(mut)]
+    pub maker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub taker_bar_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    pub payer: Signer<'info>,
+    pub token_program: Program<'info, Token>,
     pub rent: Sysvar<'info, Rent>,
     pub system_program: Program<'info, System>
 }

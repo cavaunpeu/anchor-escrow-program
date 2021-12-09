@@ -35,11 +35,11 @@ describe('anchor-escrow-program', () => {
   before(async () => {
     // Generate fooCoinMint address (PDA).
     [fooCoinMint, fooCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
-      [], program.programId
+      [(new TextEncoder()).encode('foo')], program.programId
     );
     // Generate barCoinMint address (PDA).
     [barCoinMint, barCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
-      [], program.programId
+      [(new TextEncoder()).encode('bar')], program.programId
     );
     // Initialize mints.
     await program.rpc.initializeMints(
@@ -85,6 +85,7 @@ describe('anchor-escrow-program', () => {
       barCoinMint,
       taker.publicKey
     );
+
     // Initialize maker associated token accounts.
     await program.rpc.initializeMakerAssocTokenAccts(
       {
@@ -140,12 +141,28 @@ describe('anchor-escrow-program', () => {
       }
     );
     // Generate swap state address.
-    // swapState = anchor.web3.Keypair.generate();
-    // // Generate escrow account address (PDA).
-    // [escrowAccount, escrowAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
-    //   [swapState.publicKey.toBuffer()],
-    //   program.programId
-    // );
+    swapState = anchor.web3.Keypair.generate();
+    // Generate escrow account address (PDA).
+    [escrowAccount, escrowAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
+      [swapState.publicKey.toBuffer()],
+      program.programId
+    );
+    // Initialize escrow.
+    await program.rpc.initializeEscrow(
+      escrowAccountBump,
+      {
+        accounts: {
+          fooCoinMint: fooCoinMint,
+          swapState: swapState.publicKey,
+          escrowAccount: escrowAccount,
+          payer: payer,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId
+        },
+        signers: [swapState]
+      },
+    );
   });
 
   it('runs beforeEach', async () => {

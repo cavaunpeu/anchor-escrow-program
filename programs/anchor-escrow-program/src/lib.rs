@@ -43,7 +43,7 @@ pub mod anchor_escrow_program {
                     to: ctx.accounts.maker_foo_coin_assoc_token_acct.to_account_info(),
                     authority: ctx.accounts.foo_coin_mint.to_account_info(),
                 },
-                &[&[&[], &[foo_coin_mint_bump]]],
+                &[&["foo".as_ref(), &[foo_coin_mint_bump]]],
             ),
             init_token_balance
         )?;
@@ -55,10 +55,17 @@ pub mod anchor_escrow_program {
                     to: ctx.accounts.taker_bar_coin_assoc_token_acct.to_account_info(),
                     authority: ctx.accounts.bar_coin_mint.to_account_info(),
                 },
-                &[&[&[], &[bar_coin_mint_bump]]],
+                &[&["bar".as_ref(), &[bar_coin_mint_bump]]],
             ),
             init_token_balance
         )?;
+        Ok(())
+    }
+
+    pub fn initialize_escrow(
+        ctx: Context<InitializeEscrow>,
+        escrow_account_bump: u8
+    ) -> ProgramResult {
         Ok(())
     }
 }
@@ -176,7 +183,7 @@ pub struct InitializeMints<'info> {
     #[account(
         init_if_needed,
         payer = payer,
-        seeds = [],
+        seeds = ["foo".as_ref()],
         bump = foo_coin_mint_bump,
         mint::decimals = 0,
         mint::authority = foo_coin_mint
@@ -185,7 +192,7 @@ pub struct InitializeMints<'info> {
     #[account(
         init_if_needed,
         payer = payer,
-        seeds = [],
+        seeds = ["bar".as_ref()],
         bump = bar_coin_mint_bump,
         mint::decimals = 0,
         mint::authority = bar_coin_mint
@@ -263,6 +270,27 @@ pub struct MintTokens<'info> {
     pub token_program: Program<'info, Token>,
     pub rent: Sysvar<'info, Rent>,
     pub system_program: Program<'info, System>
+}
+
+#[derive(Accounts)]
+#[instruction(escrow_account_bump: u8)]
+pub struct InitializeEscrow<'info> {
+    pub foo_coin_mint: Account<'info, Mint>,
+    #[account(init, payer = payer, space = 8 + 32 + 32 + 8 + 1)]
+    pub swap_state: Account<'info, SwapState>,
+    #[account(
+        init,
+        payer = payer,
+        seeds = [swap_state.key().as_ref()],
+        bump = escrow_account_bump,
+        token::mint = foo_coin_mint,
+        token::authority = escrow_account
+    )]
+    pub escrow_account: Account<'info, TokenAccount>,
+    pub payer: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
+    pub rent: Sysvar<'info, Rent>
 }
 
 // #[derive(Accounts)]

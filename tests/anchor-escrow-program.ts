@@ -16,10 +16,10 @@ describe('anchor-escrow-program', () => {
   const maker = anchor.web3.Keypair.generate();
   const taker = anchor.web3.Keypair.generate();
 
-  let makerFooCoinTokenAccount: anchor.web3.PublicKey;
-  let makerBarCoinTokenAccount: anchor.web3.PublicKey;
-  let takerFooCoinTokenAccount: anchor.web3.PublicKey;
-  let takerBarCoinTokenAccount: anchor.web3.PublicKey;
+  let makerFooCoinAssocTokenAcct: anchor.web3.PublicKey;
+  let makerBarCoinAssocTokenAcct: anchor.web3.PublicKey;
+  let takerFooCoinAssocTokenAcct: anchor.web3.PublicKey;
+  let takerBarCoinAssocTokenAcct: anchor.web3.PublicKey;
   let fooCoinMint: anchor.web3.PublicKey;
   let fooCoinMintBump: number;
   let barCoinMint: anchor.web3.PublicKey;
@@ -62,13 +62,66 @@ describe('anchor-escrow-program', () => {
   beforeEach(async () => {
     // Create associated token accounts.
     // Both the `maker` and `taker` will have FooCoin and BarCoin ATAs.
-    // makerFooCoinTokenAccount = await spl.Token.getAssociatedTokenAddress(
-    //   spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-    //   spl.TOKEN_PROGRAM_ID,
-    //   fooCoinMint,
-    //   fooCoinMint
-    // );
-
+    makerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+      spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+      spl.TOKEN_PROGRAM_ID,
+      fooCoinMint,
+      maker.publicKey
+    );
+    makerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+      spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+      spl.TOKEN_PROGRAM_ID,
+      barCoinMint,
+      maker.publicKey
+    );
+    takerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+      spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+      spl.TOKEN_PROGRAM_ID,
+      fooCoinMint,
+      taker.publicKey
+    );
+    takerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+      spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+      spl.TOKEN_PROGRAM_ID,
+      barCoinMint,
+      taker.publicKey
+    );
+    // Initialize maker associated token accounts.
+    await program.rpc.initializeMakerAssocTokenAccts(
+      {
+        accounts: {
+          fooCoinMint: fooCoinMint,
+          barCoinMint: barCoinMint,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
+          makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
+          payer: payer,
+          maker: maker.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId
+        },
+        signers: [maker]
+      }
+    );
+    // Initialize maker associated token accounts.
+    await program.rpc.initializeTakerAssocTokenAccts(
+      {
+        accounts: {
+          fooCoinMint: fooCoinMint,
+          barCoinMint: barCoinMint,
+          takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+          takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+          payer: payer,
+          taker: taker.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+          associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+          rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          systemProgram: anchor.web3.SystemProgram.programId
+        },
+        signers: [taker]
+      }
+    );
     // // Mint FooCoin to maker and BarCoin to taker.
     // await fooCoinMint.mintTo(
     //   makerFooCoinTokenAccount,

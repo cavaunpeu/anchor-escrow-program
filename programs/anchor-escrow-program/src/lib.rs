@@ -1,5 +1,8 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{Mint, Token, TokenAccount};
+use anchor_spl::{
+    token::{Mint, Token, TokenAccount},
+    associated_token::AssociatedToken
+};
 
 declare_id!("Bt4LgWEnBfegteNdgErSK4GfD5aXzQxrTAfNhkT1Et2i");
 
@@ -14,13 +17,17 @@ pub mod anchor_escrow_program {
         Ok(())
     }
 
-    // pub fn initialize_assoc_token_accts(
-    //     ctx: Context<InitializeAssociatedTokenAccounts>,
-    //     foo_coin_mint_bump: u8,
-    //     bar_coin_mint_bump: u8
-    // ) -> ProgramResult {
-    //     Ok(())
-    // }
+    pub fn initialize_maker_assoc_token_accts(
+        ctx: Context<InitializeMakerATAs>
+    ) -> ProgramResult {
+        Ok(())
+    }
+
+    pub fn initialize_taker_assoc_token_accts(
+        ctx: Context<InitializeTakerATAs>
+    ) -> ProgramResult {
+        Ok(())
+    }
 }
     // pub fn submit(
     //     ctx: Context<Submit>,
@@ -153,26 +160,61 @@ pub struct InitializeMints<'info> {
     pub bar_coin_mint: Account<'info, Mint>,
     pub payer: Signer<'info>,
     pub token_program: Program<'info, Token>,
-    pub system_program: Program<'info, System>,
-    pub rent: Sysvar<'info, Rent>
+    pub rent: Sysvar<'info, Rent>,
+    pub system_program: Program<'info, System>
 }
 
-// #[derive(Accounts)]
-// #[instruction(foo_coin_mint_bump: u8, bar_coin_mint_bump: u8)]
-// pub struct InitializeAssociatedTokenAccounts<'info> {
-//     pub foo_coin_mint: Account<'info, Mint>,
-//     pub bar_coin_mint: Account<'info, Mint>,
-//     #[account(
-//         init_if_needed,
-//         payer = payer,
+#[derive(Accounts)]
+pub struct InitializeMakerATAs<'info> {
+    pub foo_coin_mint: Account<'info, Mint>,
+    pub bar_coin_mint: Account<'info, Mint>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        associated_token::mint = foo_coin_mint,
+        associated_token::authority = maker
+    )]
+    pub maker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        associated_token::mint = bar_coin_mint,
+        associated_token::authority = maker
+    )]
+    pub maker_bar_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    pub payer: Signer<'info>,
+    pub maker: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub rent: Sysvar<'info, Rent>,
+    pub system_program: Program<'info, System>
+}
 
-//     )]
-//     pub maker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
-//     pub payer: Signer<'info>,
-//     pub token_program: Program<'info, Token>,
-//     pub system_program: Program<'info, System>,
-//     pub rent: Sysvar<'info, Rent>
-// }
+#[derive(Accounts)]
+pub struct InitializeTakerATAs<'info> {
+    pub foo_coin_mint: Account<'info, Mint>,
+    pub bar_coin_mint: Account<'info, Mint>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        associated_token::mint = foo_coin_mint,
+        associated_token::authority = taker
+    )]
+    pub taker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    #[account(
+        init_if_needed,
+        payer = payer,
+        associated_token::mint = bar_coin_mint,
+        associated_token::authority = taker
+    )]
+    pub taker_bar_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    pub payer: Signer<'info>,
+    pub taker: Signer<'info>,
+    pub token_program: Program<'info, Token>,
+    pub associated_token_program: Program<'info, AssociatedToken>,
+    pub rent: Sysvar<'info, Rent>,
+    pub system_program: Program<'info, System>
+}
 
 // #[derive(Accounts)]
 // pub struct Submit<'info> {

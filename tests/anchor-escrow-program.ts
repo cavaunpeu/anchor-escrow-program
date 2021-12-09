@@ -42,7 +42,7 @@ describe('anchor-escrow-program', () => {
       [(new TextEncoder()).encode('bar')], program.programId
     );
     // Initialize mints.
-    await program.rpc.initializeMints(
+    await program.rpc.initMints(
       fooCoinMintBump,
       barCoinMintBump,
       {
@@ -87,7 +87,7 @@ describe('anchor-escrow-program', () => {
     );
 
     // Initialize maker associated token accounts.
-    await program.rpc.initializeMakerAssocTokenAccts(
+    await program.rpc.initMakerAssocTokenAccts(
       {
         accounts: {
           fooCoinMint: fooCoinMint,
@@ -105,7 +105,7 @@ describe('anchor-escrow-program', () => {
       }
     );
     // Initialize maker associated token accounts.
-    await program.rpc.initializeTakerAssocTokenAccts(
+    await program.rpc.initTakerAssocTokenAccts(
       {
         accounts: {
           fooCoinMint: fooCoinMint,
@@ -148,7 +148,7 @@ describe('anchor-escrow-program', () => {
       program.programId
     );
     // Initialize escrow.
-    await program.rpc.initializeEscrow(
+    await program.rpc.initEscrow(
       escrowAccountBump,
       {
         accounts: {

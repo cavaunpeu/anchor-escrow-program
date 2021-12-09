@@ -9,7 +9,7 @@ declare_id!("Bt4LgWEnBfegteNdgErSK4GfD5aXzQxrTAfNhkT1Et2i");
 #[program]
 pub mod anchor_escrow_program {
     use super::*;
-    pub fn initialize_mints(
+    pub fn init_mints(
         ctx: Context<InitializeMints>,
         foo_coin_mint_bump: u8,
         bar_coin_mint_bump: u8
@@ -17,13 +17,13 @@ pub mod anchor_escrow_program {
         Ok(())
     }
 
-    pub fn initialize_maker_assoc_token_accts(
+    pub fn init_maker_assoc_token_accts(
         ctx: Context<InitializeMakerATAs>
     ) -> ProgramResult {
         Ok(())
     }
 
-    pub fn initialize_taker_assoc_token_accts(
+    pub fn init_taker_assoc_token_accts(
         ctx: Context<InitializeTakerATAs>
     ) -> ProgramResult {
         Ok(())
@@ -62,7 +62,7 @@ pub mod anchor_escrow_program {
         Ok(())
     }
 
-    pub fn initialize_escrow(
+    pub fn init_escrow(
         ctx: Context<InitializeEscrow>,
         escrow_account_bump: u8
     ) -> ProgramResult {

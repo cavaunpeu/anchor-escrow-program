@@ -262,11 +262,21 @@ pub struct MintTokens<'info> {
     pub foo_coin_mint: Account<'info, Mint>,
     #[account(mut)]
     pub bar_coin_mint: Account<'info, Mint>,
-    #[account(mut)]
+    #[account(
+        mut,
+        associated_token::mint = foo_coin_mint,
+        associated_token::authority = maker
+    )]
     pub maker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
-    #[account(mut)]
+    #[account(
+        mut,
+        associated_token::mint = bar_coin_mint,
+        associated_token::authority = taker
+    )]
     pub taker_bar_coin_assoc_token_acct: Account<'info, TokenAccount>,
     pub payer: Signer<'info>,
+    pub maker: Signer<'info>,
+    pub taker: Signer<'info>,
     pub token_program: Program<'info, Token>,
     pub rent: Sysvar<'info, Rent>,
     pub system_program: Program<'info, System>

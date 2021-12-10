@@ -135,9 +135,12 @@ describe('anchor-escrow-program', () => {
           takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           payer: payer.publicKey,
+          maker: maker.publicKey,
+          taker: taker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId
-        }
+        },
+        signers: [maker, taker]
       }
     );
     // Generate swap state address.

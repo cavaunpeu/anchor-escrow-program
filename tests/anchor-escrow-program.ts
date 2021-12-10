@@ -205,33 +205,37 @@ describe('anchor-escrow-program', () => {
       initTokenBalance - fooCoinAmount
     );
 
-    // await program.rpc.accept(
-    //   {
-    //     accounts: {
-    //       swapState: swapState.publicKey,
-    //       makerBarCoinTokenAccount: makerBarCoinTokenAccount,
-    //       takerBarCoinTokenAccount: takerBarCoinTokenAccount,
-    //       takerFooCoinTokenAccount: takerFooCoinTokenAccount,
-    //       escrowAccount: escrowAccount,
-    //       maker: wallet.publicKey,
-    //       taker: taker.publicKey,
-    //       fooCoinMint: fooCoinMint.publicKey,
-    //       tokenProgram: spl.TOKEN_PROGRAM_ID,
-    //     },
-    //     signers: [taker]
-    //   }
-    // );
+    await program.rpc.accept(
+      {
+        accounts: {
+          swapState: swapState.publicKey,
+          takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+          makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
+          escrowAccount: escrowAccount,
+          takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
+          taker: taker.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
+        },
+        signers: [taker]
+      }
+    );
 
-    // assert.equal(
-    //   (await barCoinMint.getAccountInfo(takerBarCoinTokenAccount)).amount.toNumber(),
-    //   takerBarCoinTokenAccountInitialAmount - barCoinAmount
-    // );
-    // assert.equal(
-    //   (await barCoinMint.getAccountInfo(makerBarCoinTokenAccount)).amount.toNumber(),
-    //   barCoinAmount
-    // );
+    assert.equal(
+      parseInt((await program.provider.connection.getTokenAccountBalance(makerBarCoinAssocTokenAcct)).value.amount),
+      barCoinAmount
+    );
+    assert.equal(
+      parseInt((await program.provider.connection.getTokenAccountBalance(takerBarCoinAssocTokenAcct)).value.amount),
+      initTokenBalance - barCoinAmount
+    );
+    assert.equal(
+      parseInt((await program.provider.connection.getTokenAccountBalance(takerFooCoinAssocTokenAcct)).value.amount),
+      fooCoinAmount
+    );
 
-    // await assertGracefulCleanup();
+    await assertGracefulCleanup();
 
   });
 

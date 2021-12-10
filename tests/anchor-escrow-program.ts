@@ -379,13 +379,10 @@ describe('anchor-escrow-program', () => {
   })
 
   xit('does not let maker submit a swap for which they have insufficient funds', async () => {
-    const makerFooCoinAssocTokenAcctBalance = parseInt(
-      (await program.provider.connection.getTokenAccountBalance(makerFooCoinAssocTokenAcct)).value.amount
-    );
     try {
       await program.rpc.submit(
         escrowAccountBump,
-        new anchor.BN(makerFooCoinAssocTokenAcctBalance + 1),
+        new anchor.BN(initTokenBalance + 1),
         new anchor.BN(barCoinAmount),
         {
           accounts: {
@@ -410,24 +407,24 @@ describe('anchor-escrow-program', () => {
     // await assertGracefulCleanup();
   })
 
-  xit('does not let taker accept a swap for which they have insufficient funds', async () => {
+  it('does not let taker accept a swap for which they have insufficient funds', async () => {
     await program.rpc.submit(
       escrowAccountBump,
-      new anchor.BN(fooCoinAmount),
-      new anchor.BN(takerBarCoinTokenAccountInitialAmount + 1),
+      new anchor.BN(initTokenBalance),
+      new anchor.BN(initTokenBalance + 1),
       {
         accounts: {
+          barCoinMint: barCoinMint,
           swapState: swapState.publicKey,
-          maker: wallet.publicKey,
-          fooCoinMint: fooCoinMint.publicKey,
-          barCoinMint: barCoinMint.publicKey,
-          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId,
         },
-        signers: [swapState]
+        signers: [maker]
       }
     );
 
@@ -436,13 +433,15 @@ describe('anchor-escrow-program', () => {
         {
           accounts: {
             swapState: swapState.publicKey,
-            makerBarCoinTokenAccount: makerBarCoinTokenAccount,
-            takerBarCoinTokenAccount: takerBarCoinTokenAccount,
-            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+            // In a real app, taker will need to get/compute this value from their client.
+            makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
             escrowAccount: escrowAccount,
-            maker: wallet.publicKey,
+            takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+            payer: payer.publicKey,
+            // In a real app, taker will need to get/compute this value from their client.
+            maker: maker.publicKey,
             taker: taker.publicKey,
-            fooCoinMint: fooCoinMint.publicKey,
             tokenProgram: spl.TOKEN_PROGRAM_ID,
           },
           signers: [taker]

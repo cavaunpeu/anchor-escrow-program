@@ -12,7 +12,7 @@ describe('anchor-escrow-program', () => {
 
   const program = anchor.workspace.AnchorEscrowProgram as Program<AnchorEscrowProgram>;
   const wallet = program.provider.wallet;
-  const payer = wallet.publicKey;
+  const payer = wallet;
   const maker = anchor.web3.Keypair.generate();
   const taker = anchor.web3.Keypair.generate();
 
@@ -47,9 +47,9 @@ describe('anchor-escrow-program', () => {
       barCoinMintBump,
       {
         accounts: {
-          payer: payer,
-          fooCoinMint: fooCoinMint,
           barCoinMint: barCoinMint,
+          payer: payer.publicKey,
+          fooCoinMint: fooCoinMint,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId
@@ -94,9 +94,9 @@ describe('anchor-escrow-program', () => {
           barCoinMint: barCoinMint,
           makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
-          payer: payer,
-          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId
@@ -112,9 +112,9 @@ describe('anchor-escrow-program', () => {
           barCoinMint: barCoinMint,
           takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
           takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
-          payer: payer,
-          taker: taker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
+          payer: payer.publicKey,
+          taker: taker.publicKey,
           associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId
@@ -131,11 +131,11 @@ describe('anchor-escrow-program', () => {
         accounts: {
           fooCoinMint: fooCoinMint,
           barCoinMint: barCoinMint,
-          makerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
-          payer: payer,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          payer: payer.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId
         }
       }
@@ -155,18 +155,14 @@ describe('anchor-escrow-program', () => {
           fooCoinMint: fooCoinMint,
           swapState: swapState.publicKey,
           escrowAccount: escrowAccount,
-          payer: payer,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+          payer: payer.publicKey,
+          tokenProgram: spl.TOKEN_PROGRAM_ID,
           systemProgram: anchor.web3.SystemProgram.programId
         },
         signers: [swapState]
       },
     );
-  });
-
-  it('runs beforeEach', async () => {
-    assert.equal(true, true)
   });
 
   let assertGracefulCleanup = async () => {
@@ -179,63 +175,63 @@ describe('anchor-escrow-program', () => {
     assert.notEqual(null, await program.provider.connection.getAccountInfo(escrowAccount));
   };
 
-  xit('lets maker submit and taker accept a transaction', async () => {
+  it('lets maker submit and taker accept a transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
       new anchor.BN(barCoinAmount),
       {
         accounts: {
+          barCoinMint: barCoinMint,
           swapState: swapState.publicKey,
-          maker: wallet.publicKey,
-          fooCoinMint: fooCoinMint.publicKey,
-          barCoinMint: barCoinMint.publicKey,
-          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId,
         },
-        signers: [swapState]
+        signers: [maker]
       }
     );
 
     assert.equal(
-      (await fooCoinMint.getAccountInfo(escrowAccount)).amount.toNumber(),
+      parseInt((await program.provider.connection.getTokenAccountBalance(escrowAccount)).value.amount),
       fooCoinAmount
     );
     assert.equal(
-      (await fooCoinMint.getAccountInfo(makerFooCoinTokenAccount)).amount.toNumber(),
-      makerFooCoinTokenAccountInitialAmount - fooCoinAmount
+      parseInt((await program.provider.connection.getTokenAccountBalance(makerFooCoinAssocTokenAcct)).value.amount),
+      initTokenBalance - fooCoinAmount
     );
 
-    await program.rpc.accept(
-      {
-        accounts: {
-          swapState: swapState.publicKey,
-          makerBarCoinTokenAccount: makerBarCoinTokenAccount,
-          takerBarCoinTokenAccount: takerBarCoinTokenAccount,
-          takerFooCoinTokenAccount: takerFooCoinTokenAccount,
-          escrowAccount: escrowAccount,
-          maker: wallet.publicKey,
-          taker: taker.publicKey,
-          fooCoinMint: fooCoinMint.publicKey,
-          tokenProgram: spl.TOKEN_PROGRAM_ID,
-        },
-        signers: [taker]
-      }
-    );
+    // await program.rpc.accept(
+    //   {
+    //     accounts: {
+    //       swapState: swapState.publicKey,
+    //       makerBarCoinTokenAccount: makerBarCoinTokenAccount,
+    //       takerBarCoinTokenAccount: takerBarCoinTokenAccount,
+    //       takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+    //       escrowAccount: escrowAccount,
+    //       maker: wallet.publicKey,
+    //       taker: taker.publicKey,
+    //       fooCoinMint: fooCoinMint.publicKey,
+    //       tokenProgram: spl.TOKEN_PROGRAM_ID,
+    //     },
+    //     signers: [taker]
+    //   }
+    // );
 
-    assert.equal(
-      (await barCoinMint.getAccountInfo(takerBarCoinTokenAccount)).amount.toNumber(),
-      takerBarCoinTokenAccountInitialAmount - barCoinAmount
-    );
-    assert.equal(
-      (await barCoinMint.getAccountInfo(makerBarCoinTokenAccount)).amount.toNumber(),
-      barCoinAmount
-    );
+    // assert.equal(
+    //   (await barCoinMint.getAccountInfo(takerBarCoinTokenAccount)).amount.toNumber(),
+    //   takerBarCoinTokenAccountInitialAmount - barCoinAmount
+    // );
+    // assert.equal(
+    //   (await barCoinMint.getAccountInfo(makerBarCoinTokenAccount)).amount.toNumber(),
+    //   barCoinAmount
+    // );
 
-    await assertGracefulCleanup();
+    // await assertGracefulCleanup();
 
   });
 

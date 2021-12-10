@@ -210,10 +210,12 @@ describe('anchor-escrow-program', () => {
         accounts: {
           swapState: swapState.publicKey,
           takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+          // Taker will need to get/compute this value from their machine.
           makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
           takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
           payer: payer.publicKey,
+          // Taker will need to get/compute this value from their machine.
           maker: maker.publicKey,
           taker: taker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,

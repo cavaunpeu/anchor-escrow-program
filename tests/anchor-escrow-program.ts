@@ -407,7 +407,7 @@ describe('anchor-escrow-program', () => {
     // await assertGracefulCleanup();
   })
 
-  it('does not let taker accept a swap for which they have insufficient funds', async () => {
+  xit('does not let taker accept a swap for which they have insufficient funds', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(initTokenBalance),
@@ -455,37 +455,35 @@ describe('anchor-escrow-program', () => {
     await assertNotGracefulCleanup();
   })
 
-  xit('does not let taker send tokens to an ATA which maker does not own', async () => {
+  it('does not let taker send tokens to an ATA which maker does not own', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
       new anchor.BN(barCoinAmount),
       {
         accounts: {
+          barCoinMint: barCoinMint,
           swapState: swapState.publicKey,
-          maker: wallet.publicKey,
-          fooCoinMint: fooCoinMint.publicKey,
-          barCoinMint: barCoinMint.publicKey,
-          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId,
         },
-        signers: [swapState]
+        signers: [maker]
       }
     );
 
     // Create rando keypair.
     const rando = anchor.web3.Keypair.generate();
     // Create BarCoin ATA for rando.
-    const randoBarCoinTokenAccount = await barCoinMint.createAssociatedTokenAccount(rando.publicKey);
-    // Mint BarCoins to rando.
-    await barCoinMint.mintTo(
-      randoBarCoinTokenAccount,
-      wallet.publicKey,
-      [],
-      100
+    const randoBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+      spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+      spl.TOKEN_PROGRAM_ID,
+      barCoinMint,
+      rando.publicKey
     );
 
     try {
@@ -493,21 +491,23 @@ describe('anchor-escrow-program', () => {
         {
           accounts: {
             swapState: swapState.publicKey,
-            makerBarCoinTokenAccount: randoBarCoinTokenAccount,  // not owned by maker!
-            takerBarCoinTokenAccount: takerBarCoinTokenAccount,
-            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+            // Not owned by maker!
+            makerBarCoinAssocTokenAcct: randoBarCoinAssocTokenAcct,
             escrowAccount: escrowAccount,
-            maker: wallet.publicKey,
+            takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+            payer: payer.publicKey,
+            // In a real app, taker will need to get/compute this value from their client.
+            maker: maker.publicKey,
             taker: taker.publicKey,
-            fooCoinMint: fooCoinMint.publicKey,
             tokenProgram: spl.TOKEN_PROGRAM_ID,
           },
           signers: [taker]
         }
       );
     } catch (err) {
-      assert.equal(err.code, 149);
-      assert.equal(err.msg, 'An associated constraint was violated');
+      assert.equal(err.code, 167);
+      assert.equal(err.msg, 'The given account is not owned by the executing program');
     }
 
     await assertNotGracefulCleanup();

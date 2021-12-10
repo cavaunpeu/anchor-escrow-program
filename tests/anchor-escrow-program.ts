@@ -4,6 +4,7 @@ import { Program } from '@project-serum/anchor';
 import { AnchorEscrowProgram } from '../target/types/anchor_escrow_program';
 import * as assert from 'assert';
 import { idlAddress } from '@project-serum/anchor/dist/cjs/idl';
+import { NodeWallet } from '@project-serum/anchor/dist/cjs/provider';
 
 describe('anchor-escrow-program', () => {
 
@@ -178,7 +179,7 @@ describe('anchor-escrow-program', () => {
     assert.notEqual(null, await program.provider.connection.getAccountInfo(escrowAccount));
   };
 
-  it('lets maker submit and taker accept a transaction', async () => {
+  xit('lets maker submit and taker accept a transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -244,7 +245,7 @@ describe('anchor-escrow-program', () => {
 
   });
 
-  it('lets maker submit and maker cancel transaction', async () => {
+  xit('lets maker submit and maker cancel transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -311,42 +312,42 @@ describe('anchor-escrow-program', () => {
     await assertGracefulCleanup();
   });
 
-  xit('does not let taker send the wrong kind of tokens', async () => {
+  it('does not let taker send the wrong kind of tokens', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
       new anchor.BN(barCoinAmount),
       {
         accounts: {
+          barCoinMint: barCoinMint,
           swapState: swapState.publicKey,
-          maker: wallet.publicKey,
-          fooCoinMint: fooCoinMint.publicKey,
-          barCoinMint: barCoinMint.publicKey,
-          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId,
         },
-        signers: [swapState]
+        signers: [maker]
       }
     );
 
     // Create ErroneousCoin mint.
     const erroneousCoinMint = await spl.Token.createMint(
       program.provider.connection,
-      wallet.payer,
-      wallet.publicKey,
-      wallet.publicKey,
+      (payer as NodeWallet).payer,
+      payer.publicKey,
+      payer.publicKey,
       0,
       spl.TOKEN_PROGRAM_ID,
     )
     // Create taker ErroneousCoin ATA.
-    const takerErroneousCoinTokenAccount = await erroneousCoinMint.createAssociatedTokenAccount(wallet.publicKey);
+    const takerErroneousCoinAssocTokenAccount = await erroneousCoinMint.createAssociatedTokenAccount(payer.publicKey);
     // Mint ErroneousCoins to taker ErroneousCoin ATA.
     await erroneousCoinMint.mintTo(
-      takerErroneousCoinTokenAccount,
-      wallet.publicKey,
+      takerErroneousCoinAssocTokenAccount,
+      payer.publicKey,
       [],
       100
     );
@@ -356,21 +357,23 @@ describe('anchor-escrow-program', () => {
         {
           accounts: {
             swapState: swapState.publicKey,
-            makerBarCoinTokenAccount: makerBarCoinTokenAccount,
-            takerBarCoinTokenAccount: takerErroneousCoinTokenAccount,  // not BarCoins!
-            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            takerBarCoinAssocTokenAcct: takerErroneousCoinAssocTokenAccount,
+            // In a real app, taker will need to get/compute this value from their client.
+            makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
             escrowAccount: escrowAccount,
-            maker: wallet.publicKey,
+            takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+            payer: payer.publicKey,
+            // In a real app, taker will need to get/compute this value from their client.
+            maker: maker.publicKey,
             taker: taker.publicKey,
-            fooCoinMint: fooCoinMint.publicKey,
             tokenProgram: spl.TOKEN_PROGRAM_ID,
           },
           signers: [taker]
         }
       );
     } catch (err) {
-      assert.equal(err.code, 143);
-      assert.equal(err.msg, 'A raw constraint was violated');
+      assert.equal(err.code, 149);
+      assert.equal(err.msg, 'An associated constraint was violated');
     }
 
     await assertNotGracefulCleanup();

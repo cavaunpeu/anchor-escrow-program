@@ -284,6 +284,7 @@ describe('anchor-escrow-program', () => {
       parseInt((await program.provider.connection.getTokenAccountBalance(makerFooCoinAssocTokenAcct)).value.amount),
       initTokenBalance
     );
+    await assertGracefulCleanup();
 
     try {
       await program.rpc.accept(
@@ -308,11 +309,9 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.code, 167);
       assert.equal(err.msg, 'The given account is not owned by the executing program');
     }
-
-    await assertGracefulCleanup();
   });
 
-  it('does not let taker send the wrong kind of tokens', async () => {
+  xit('does not let taker send the wrong kind of tokens', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -380,32 +379,35 @@ describe('anchor-escrow-program', () => {
   })
 
   xit('does not let maker submit a swap for which they have insufficient funds', async () => {
+    const makerFooCoinAssocTokenAcctBalance = parseInt(
+      (await program.provider.connection.getTokenAccountBalance(makerFooCoinAssocTokenAcct)).value.amount
+    );
     try {
       await program.rpc.submit(
         escrowAccountBump,
-        new anchor.BN(makerFooCoinTokenAccountInitialAmount + 1),
+        new anchor.BN(makerFooCoinAssocTokenAcctBalance + 1),
         new anchor.BN(barCoinAmount),
         {
           accounts: {
+            barCoinMint: barCoinMint,
             swapState: swapState.publicKey,
-            maker: wallet.publicKey,
-            fooCoinMint: fooCoinMint.publicKey,
-            barCoinMint: barCoinMint.publicKey,
-            makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+            makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
             escrowAccount: escrowAccount,
+            payer: payer.publicKey,
+            maker: maker.publicKey,
             tokenProgram: spl.TOKEN_PROGRAM_ID,
             rent: anchor.web3.SYSVAR_RENT_PUBKEY,
             systemProgram: anchor.web3.SystemProgram.programId,
           },
-          signers: [swapState]
+          signers: [maker]
         }
       );
     } catch (err) {
       assert.equal(err.message, 'failed to send transaction: Transaction simulation failed: Error processing Instruction 0: custom program error: 0x1');
-      assert.equal(err.logs[11], 'Program log: Error: insufficient funds');
+      assert.equal(err.logs[3], 'Program log: Error: insufficient funds');
     }
 
-    await assertGracefulCleanup();
+    // await assertGracefulCleanup();
   })
 
   xit('does not let taker accept a swap for which they have insufficient funds', async () => {

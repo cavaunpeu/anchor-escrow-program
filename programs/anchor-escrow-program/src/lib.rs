@@ -29,8 +29,8 @@ pub mod anchor_escrow_program {
         Ok(())
     }
 
-    pub fn mint_tokens(
-        ctx: Context<MintTokens>,
+    pub fn reset_assoc_token_acct_balances(
+        ctx: Context<ResetAssociatedTokenAccountBalances>,
         foo_coin_mint_bump: u8,
         bar_coin_mint_bump: u8,
         init_token_balance: u64
@@ -45,7 +45,7 @@ pub mod anchor_escrow_program {
                 },
                 &[&["foo".as_ref(), &[foo_coin_mint_bump]]],
             ),
-            init_token_balance
+            init_token_balance - ctx.accounts.maker_foo_coin_assoc_token_acct.amount
         )?;
         anchor_spl::token::mint_to(
             CpiContext::new_with_signer(
@@ -57,7 +57,7 @@ pub mod anchor_escrow_program {
                 },
                 &[&["bar".as_ref(), &[bar_coin_mint_bump]]],
             ),
-            init_token_balance
+            init_token_balance - ctx.accounts.taker_bar_coin_assoc_token_acct.amount
         )?;
         Ok(())
     }
@@ -141,39 +141,40 @@ pub mod anchor_escrow_program {
             ]]
         ))
     }
-    // pub fn cancel(
-    //     ctx: Context<Cancel>
-    // ) -> ProgramResult {
-    //     // Transfer FooCoin's from escrow to maker's FooCoin ATA
-    //     anchor_spl::token::transfer(
-    //         CpiContext::new_with_signer(
-    //             ctx.accounts.token_program.to_account_info(),
-    //             anchor_spl::token::Transfer {
-    //                 from: ctx.accounts.escrow_account.to_account_info(),
-    //                 to: ctx.accounts.maker_foo_coin_assoc_token_acct.to_account_info(),
-    //                 authority: ctx.accounts.escrow_account.to_account_info()
-    //             },
-    //             &[&[
-    //                 ctx.accounts.swap_state.key().as_ref(),
-    //                 &[ctx.accounts.swap_state.escrow_account_bump]
-    //             ]]
-    //         ),
-    //         ctx.accounts.escrow_account.amount
-    //     )?;
-    //     // Close the escrow account
-    //     anchor_spl::token::close_account(CpiContext::new_with_signer(
-    //         ctx.accounts.token_program.to_account_info(),
-    //         anchor_spl::token::CloseAccount {
-    //             account: ctx.accounts.escrow_account.to_account_info(),
-    //             destination: ctx.accounts.payer.to_account_info(),
-    //             authority: ctx.accounts.escrow_account.to_account_info()
-    //         },
-    //         &[&[
-    //             ctx.accounts.swap_state.key().as_ref(),
-    //             &[ctx.accounts.swap_state.escrow_account_bump]
-    //         ]]
-    //     ))
-    // }
+
+    pub fn cancel(
+        ctx: Context<Cancel>
+    ) -> ProgramResult {
+        // Transfer FooCoin's from escrow to maker's FooCoin ATA
+        anchor_spl::token::transfer(
+            CpiContext::new_with_signer(
+                ctx.accounts.token_program.to_account_info(),
+                anchor_spl::token::Transfer {
+                    from: ctx.accounts.escrow_account.to_account_info(),
+                    to: ctx.accounts.maker_foo_coin_assoc_token_acct.to_account_info(),
+                    authority: ctx.accounts.escrow_account.to_account_info()
+                },
+                &[&[
+                    ctx.accounts.swap_state.key().as_ref(),
+                    &[ctx.accounts.swap_state.escrow_account_bump]
+                ]]
+            ),
+            ctx.accounts.escrow_account.amount
+        )?;
+        // Close the escrow account
+        anchor_spl::token::close_account(CpiContext::new_with_signer(
+            ctx.accounts.token_program.to_account_info(),
+            anchor_spl::token::CloseAccount {
+                account: ctx.accounts.escrow_account.to_account_info(),
+                destination: ctx.accounts.payer.to_account_info(),
+                authority: ctx.accounts.escrow_account.to_account_info()
+            },
+            &[&[
+                ctx.accounts.swap_state.key().as_ref(),
+                &[ctx.accounts.swap_state.escrow_account_bump]
+            ]]
+        ))
+    }
 }
 
 #[derive(Accounts)]
@@ -256,7 +257,7 @@ pub struct InitializeTakerATAs<'info> {
 }
 
 #[derive(Accounts)]
-pub struct MintTokens<'info> {
+pub struct ResetAssociatedTokenAccountBalances<'info> {
     #[account(mut)]
     pub foo_coin_mint: Account<'info, Mint>,
     #[account(mut)]
@@ -356,24 +357,26 @@ pub struct Accept<'info> {
     pub token_program: Program<'info, Token>
 }
 
-// #[derive(Accounts)]
-// pub struct Cancel<'info> {
-//     #[account(
-//         mut,
-//         constraint = swap_state.maker == *maker.key,
-//         close = payer
-//     )]
-//     pub swap_state: Account<'info, SwapState>,
-//     #[account(
-//         mut,
-//         associated_token::mint = escrow_account.mint,
-//         associated_token::authority = swap_state.maker
-//     )]
-//     pub maker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
-//     #[account(mut)]
-//     pub escrow_account: Account<'info, TokenAccount>,
-//     pub token_program: Program<'info, Token>
-// }
+#[derive(Accounts)]
+pub struct Cancel<'info> {
+    #[account(
+        mut,
+        constraint = swap_state.maker == *maker.key,
+        close = payer
+    )]
+    pub swap_state: Account<'info, SwapState>,
+    #[account(
+        mut,
+        associated_token::mint = escrow_account.mint,
+        associated_token::authority = maker
+    )]
+    pub maker_foo_coin_assoc_token_acct: Account<'info, TokenAccount>,
+    #[account(mut)]
+    pub escrow_account: Account<'info, TokenAccount>,
+    pub payer: Signer<'info>,
+    pub maker: Signer<'info>,
+    pub token_program: Program<'info, Token>
+}
 
 #[account]
 pub struct SwapState {

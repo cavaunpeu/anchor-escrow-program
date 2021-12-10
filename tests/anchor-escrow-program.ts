@@ -123,7 +123,7 @@ describe('anchor-escrow-program', () => {
       }
     );
     // Mint FooCoins and BarCoins to maker and taker respectively.
-    await program.rpc.mintTokens(
+    await program.rpc.resetAssocTokenAcctBalances(
       fooCoinMintBump,
       barCoinMintBump,
       new anchor.BN(initTokenBalance),
@@ -213,12 +213,12 @@ describe('anchor-escrow-program', () => {
         accounts: {
           swapState: swapState.publicKey,
           takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
-          // Taker will need to get/compute this value from their machine.
+          // In a real app, taker will need to get/compute this value from their client.
           makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
           takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
           payer: payer.publicKey,
-          // Taker will need to get/compute this value from their machine.
+          // In a real app, taker will need to get/compute this value from their client.
           maker: maker.publicKey,
           taker: taker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
@@ -244,24 +244,24 @@ describe('anchor-escrow-program', () => {
 
   });
 
-  xit('lets maker submit and maker cancel transaction', async () => {
+  it('lets maker submit and maker cancel transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
       new anchor.BN(barCoinAmount),
       {
         accounts: {
+          barCoinMint: barCoinMint,
           swapState: swapState.publicKey,
-          maker: wallet.publicKey,
-          fooCoinMint: fooCoinMint.publicKey,
-          barCoinMint: barCoinMint.publicKey,
-          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
           rent: anchor.web3.SYSVAR_RENT_PUBKEY,
           systemProgram: anchor.web3.SystemProgram.programId,
         },
-        signers: [swapState]
+        signers: [maker]
       }
     );
 
@@ -269,17 +269,19 @@ describe('anchor-escrow-program', () => {
       {
         accounts: {
           swapState: swapState.publicKey,
-          maker: wallet.publicKey,
-          makerFooCoinTokenAccount: makerFooCoinTokenAccount,
+          makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
           escrowAccount: escrowAccount,
+          payer: payer.publicKey,
+          maker: maker.publicKey,
           tokenProgram: spl.TOKEN_PROGRAM_ID,
-        }
+        },
+        signers: [maker]
       }
     );
 
     assert.equal(
-      (await fooCoinMint.getAccountInfo(makerFooCoinTokenAccount)).amount.toNumber(),
-      makerFooCoinTokenAccountInitialAmount
+      parseInt((await program.provider.connection.getTokenAccountBalance(makerFooCoinAssocTokenAcct)).value.amount),
+      initTokenBalance
     );
 
     try {
@@ -287,13 +289,15 @@ describe('anchor-escrow-program', () => {
         {
           accounts: {
             swapState: swapState.publicKey,
-            makerBarCoinTokenAccount: makerBarCoinTokenAccount,
-            takerBarCoinTokenAccount: takerBarCoinTokenAccount,
-            takerFooCoinTokenAccount: takerFooCoinTokenAccount,
+            takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+            // In a real app, taker will need to get/compute this value from their client.
+            makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
             escrowAccount: escrowAccount,
-            maker: wallet.publicKey,
+            takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+            payer: payer.publicKey,
+            // In a real app, taker will need to get/compute this value from their client.
+            maker: maker.publicKey,
             taker: taker.publicKey,
-            fooCoinMint: fooCoinMint.publicKey,
             tokenProgram: spl.TOKEN_PROGRAM_ID,
           },
           signers: [taker]

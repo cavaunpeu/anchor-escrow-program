@@ -179,7 +179,7 @@ describe('anchor-escrow-program', () => {
     assert.notEqual(null, await program.provider.connection.getAccountInfo(escrowAccount));
   };
 
-  xit('lets maker submit and taker accept a transaction', async () => {
+  it('lets maker submit and taker accept a transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -245,7 +245,7 @@ describe('anchor-escrow-program', () => {
 
   });
 
-  xit('lets maker submit and maker cancel transaction', async () => {
+  it('lets maker submit and maker cancel transaction', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -311,7 +311,7 @@ describe('anchor-escrow-program', () => {
     }
   });
 
-  xit('does not let taker send the wrong kind of tokens', async () => {
+  it('does not let taker send the wrong kind of tokens', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(fooCoinAmount),
@@ -378,7 +378,7 @@ describe('anchor-escrow-program', () => {
     await assertNotGracefulCleanup();
   })
 
-  xit('does not let maker submit a swap for which they have insufficient funds', async () => {
+  it('does not let maker submit a swap for which they have insufficient funds', async () => {
     try {
       await program.rpc.submit(
         escrowAccountBump,
@@ -404,10 +404,10 @@ describe('anchor-escrow-program', () => {
       assert.equal(err.logs[3], 'Program log: Error: insufficient funds');
     }
 
-    // await assertGracefulCleanup();
+    await assertNotGracefulCleanup();
   })
 
-  xit('does not let taker accept a swap for which they have insufficient funds', async () => {
+  it('does not let taker accept a swap for which they have insufficient funds', async () => {
     await program.rpc.submit(
       escrowAccountBump,
       new anchor.BN(initTokenBalance),

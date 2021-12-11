@@ -52,11 +52,24 @@ const UserInterface: FC = () => {
 
     const wallet = useAnchorWallet();
     const connection = useConnection();
+    const payer = wallet;
+    const maker = anchor.web3.Keypair.generate();
+    const taker = anchor.web3.Keypair.generate();
 
     let fooCoinMint: anchor.web3.PublicKey;
     let fooCoinMintBump: number;
     let barCoinMint: anchor.web3.PublicKey;
     let barCoinMintBump: number;
+    let makerFooCoinAssocTokenAcct: anchor.web3.PublicKey;
+    let makerBarCoinAssocTokenAcct: anchor.web3.PublicKey;
+    let takerFooCoinAssocTokenAcct: anchor.web3.PublicKey;
+    let takerBarCoinAssocTokenAcct: anchor.web3.PublicKey;
+    let escrowAccount: anchor.web3.PublicKey;
+    let escrowAccountBump: number;
+    let swapState: anchor.web3.Keypair;
+
+    const initTokenBalance = 100;
+
 
     const initialState = {
         submitButtonClicked: false,
@@ -82,7 +95,7 @@ const UserInterface: FC = () => {
 
     async function resetEscrow() {
         const program = await getProgram();
-        if (wallet && program) {
+        if (wallet && payer && program) {
             // Generate fooCoinMint address (PDA).
             [fooCoinMint, fooCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
                 [(new TextEncoder()).encode('foo')], programId
@@ -106,6 +119,113 @@ const UserInterface: FC = () => {
                     }
                 }
             )
+            // Create associated token accounts.
+            // Both the `maker` and `taker` will have FooCoin and BarCoin ATAs.
+            makerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+                spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                spl.TOKEN_PROGRAM_ID,
+                fooCoinMint,
+                maker.publicKey
+            );
+            makerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+                spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                spl.TOKEN_PROGRAM_ID,
+                barCoinMint,
+                maker.publicKey
+            );
+            takerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+                spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                spl.TOKEN_PROGRAM_ID,
+                fooCoinMint,
+                taker.publicKey
+            );
+            takerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+                spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                spl.TOKEN_PROGRAM_ID,
+                barCoinMint,
+                taker.publicKey
+            );
+
+            // Initialize maker associated token accounts.
+            await program.rpc.initMakerAssocTokenAccts(
+                {
+                accounts: {
+                    fooCoinMint: fooCoinMint,
+                    barCoinMint: barCoinMint,
+                    makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
+                    makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
+                    tokenProgram: spl.TOKEN_PROGRAM_ID,
+                    payer: payer.publicKey,
+                    maker: maker.publicKey,
+                    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                    rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                    systemProgram: anchor.web3.SystemProgram.programId
+                },
+                signers: [maker]
+                }
+            );
+            // Initialize maker associated token accounts.
+            await program.rpc.initTakerAssocTokenAccts(
+                {
+                accounts: {
+                    fooCoinMint: fooCoinMint,
+                    barCoinMint: barCoinMint,
+                    takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
+                    takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+                    tokenProgram: spl.TOKEN_PROGRAM_ID,
+                    payer: payer.publicKey,
+                    taker: taker.publicKey,
+                    associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                    rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                    systemProgram: anchor.web3.SystemProgram.programId
+                },
+                signers: [taker]
+                }
+            );
+            // Mint FooCoins and BarCoins to maker and taker respectively.
+            await program.rpc.resetAssocTokenAcctBalances(
+                fooCoinMintBump,
+                barCoinMintBump,
+                new anchor.BN(initTokenBalance),
+                {
+                accounts: {
+                    fooCoinMint: fooCoinMint,
+                    barCoinMint: barCoinMint,
+                    makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
+                    takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+                    rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                    payer: payer.publicKey,
+                    maker: maker.publicKey,
+                    taker: taker.publicKey,
+                    tokenProgram: spl.TOKEN_PROGRAM_ID,
+                    systemProgram: anchor.web3.SystemProgram.programId
+                },
+                signers: [maker, taker]
+                }
+            );
+            // Generate swap state address.
+            swapState = anchor.web3.Keypair.generate();
+            // Generate escrow account address (PDA).
+            [escrowAccount, escrowAccountBump] = await anchor.web3.PublicKey.findProgramAddress(
+                [swapState.publicKey.toBuffer()],
+                program.programId
+            );
+            // Initialize escrow.
+            await program.rpc.initEscrow(
+                escrowAccountBump,
+                {
+                accounts: {
+                    fooCoinMint: fooCoinMint,
+                    swapState: swapState.publicKey,
+                    escrowAccount: escrowAccount,
+                    rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                    payer: payer.publicKey,
+                    tokenProgram: spl.TOKEN_PROGRAM_ID,
+                    systemProgram: anchor.web3.SystemProgram.programId
+                },
+                signers: [swapState]
+                },
+            );
         }
         setState({
             ...initialState

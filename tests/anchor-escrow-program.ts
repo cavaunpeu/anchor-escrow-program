@@ -3,7 +3,6 @@ import * as spl from '@solana/spl-token';
 import { Program } from '@project-serum/anchor';
 import { AnchorEscrowProgram } from '../target/types/anchor_escrow_program';
 import * as assert from 'assert';
-import { idlAddress } from '@project-serum/anchor/dist/cjs/idl';
 import { NodeWallet } from '@project-serum/anchor/dist/cjs/provider';
 
 describe('anchor-escrow-program', () => {

@@ -1,5 +1,15 @@
 import React, { FC, useState } from 'react';
+import * as anchor from '@project-serum/anchor';
+import * as spl from '@solana/spl-token';
+import { ConfirmOptions } from '@solana/web3.js'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
+import idl from './idl.json';
+
+const programId = new anchor.web3.PublicKey(idl.metadata.address);
+const opts = {
+  preflightCommitment: "processed"
+}
 
 const Header: FC = () => {
     return (
@@ -40,6 +50,14 @@ const Description: FC = () => {
 
 const UserInterface: FC = () => {
 
+    const wallet = useAnchorWallet();
+    const connection = useConnection();
+
+    let fooCoinMint: anchor.web3.PublicKey;
+    let fooCoinMintBump: number;
+    let barCoinMint: anchor.web3.PublicKey;
+    let barCoinMintBump: number;
+
     const initialState = {
         submitButtonClicked: false,
         acceptButtonClicked: false,
@@ -50,17 +68,45 @@ const UserInterface: FC = () => {
     }
     const [state, setState] = useState(initialState);
 
-    function escrowValid(): boolean {
-        return (
-            (
-                Boolean(state['fooCoinAmount']) && (state['fooCoinAmount'] <= state['willFooCoinBalance'])
-            ) && (
-                Boolean(state['barCoinAmount']) && (state['barCoinAmount'] <= state['alanBarCoinBalance'])
-            )
-        )
-    }
+    async function getProgram() {
+        if (wallet) {
+            const provider = new anchor.Provider(
+                connection.connection,
+                wallet,
+                opts.preflightCommitment as ConfirmOptions
+            );
+            const program = new anchor.Program(idl as anchor.Idl, programId, provider);
+            return program
+        }
+    };
 
-    function resetEscrow() {
+    async function resetEscrow() {
+        const program = await getProgram();
+        if (wallet && program) {
+            // Generate fooCoinMint address (PDA).
+            [fooCoinMint, fooCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
+                [(new TextEncoder()).encode('foo')], programId
+            );
+            // Generate barCoinMint address (PDA).
+            [barCoinMint, barCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
+                [(new TextEncoder()).encode('bar')], programId
+            );
+            // Initialize mints.
+            await program.rpc.initMints(
+                fooCoinMintBump,
+                barCoinMintBump,
+                {
+                    accounts: {
+                        fooCoinMint: fooCoinMint,
+                        barCoinMint: barCoinMint,
+                        payer: wallet.publicKey,
+                        tokenProgram: spl.TOKEN_PROGRAM_ID,
+                        rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                        systemProgram: anchor.web3.SystemProgram.programId
+                    }
+                }
+            )
+        }
         setState({
             ...initialState
         })
@@ -72,6 +118,16 @@ const UserInterface: FC = () => {
 
     function acceptEscrow() {
         console.log('accepting escrow!');
+    }
+
+    function escrowValid(): boolean {
+        return (
+            (
+                Boolean(state['fooCoinAmount']) && (state['fooCoinAmount'] <= state['willFooCoinBalance'])
+            ) && (
+                Boolean(state['barCoinAmount']) && (state['barCoinAmount'] <= state['alanBarCoinBalance'])
+            )
+        )
     }
 
     function handleIxButtonClick(buttonName: string) {

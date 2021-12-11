@@ -1,19 +1,22 @@
-import React from 'react';
-import {Description, Header, EscrowProgram} from './components'
+import React, { FC } from 'react';
+import UserInterface from './components';
+import { WalletProvider, ConnectionProvider } from '@solana/wallet-adapter-react';
+import { getPhantomWallet } from '@solana/wallet-adapter-wallets';
+import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
 
-const App = () => {
+
+const App: FC = () => {
+    const endpoint = "http://127.0.0.1:8899";
+    const wallets = [getPhantomWallet()];
+
     return (
-        <div className="bg-gray-800 p-8">
-            <Header />
-            <div className='flex flex-row h-screen py-20'>
-                <div className='flex flex-col justify-start w-3/5 px-24'>
-                    <EscrowProgram />
-                </div>
-                <div className='flex flex-col justify-start w-2/5 pr-24'>
-                    <Description />
-                </div>
-            </div>
-        </div>
+        <ConnectionProvider endpoint={endpoint}>
+            <WalletProvider wallets={wallets} autoConnect>
+                <WalletModalProvider>
+                    <UserInterface />
+                </WalletModalProvider>
+            </WalletProvider>
+        </ConnectionProvider>
     )
 }
 

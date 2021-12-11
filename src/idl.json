@@ -1,0 +1,181 @@
+{
+  "version": "0.0.0",
+  "name": "anchor_escrow_program",
+  "instructions": [
+    {
+      "name": "submit",
+      "accounts": [
+        {
+          "name": "swapState",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "makerFooCoinTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "maker",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "fooCoinMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "barCoinMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "rent",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "escrowAccountBump",
+          "type": "u8"
+        },
+        {
+          "name": "fooCoinAmount",
+          "type": "u64"
+        },
+        {
+          "name": "barCoinAmount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "accept",
+      "accounts": [
+        {
+          "name": "swapState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "makerBarCoinTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "takerBarCoinTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "takerFooCoinTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "maker",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "taker",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "fooCoinMint",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    },
+    {
+      "name": "cancel",
+      "accounts": [
+        {
+          "name": "swapState",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "makerFooCoinTokenAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "escrowAccount",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "maker",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": []
+    }
+  ],
+  "accounts": [
+    {
+      "name": "SwapState",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "maker",
+            "type": "publicKey"
+          },
+          {
+            "name": "barCoinMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "barCoinAmount",
+            "type": "u64"
+          },
+          {
+            "name": "escrowAccountBump",
+            "type": "u8"
+          }
+        ]
+      }
+    }
+  ],
+  "metadata": {
+    "address": "Bt4LgWEnBfegteNdgErSK4GfD5aXzQxrTAfNhkT1Et2i"
+  }
+}

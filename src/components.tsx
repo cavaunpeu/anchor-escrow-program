@@ -55,17 +55,7 @@ const UserInterface: FC = () => {
   const wallet = useAnchorWallet();
   const connection = useConnection().connection;
   const payer = wallet;
-  const maker = anchor.web3.Keypair.generate();
-  const taker = anchor.web3.Keypair.generate();
 
-  // let fooCoinMint: anchor.web3.PublicKey;
-  let fooCoinMintBump: number;
-  let barCoinMint: anchor.web3.PublicKey;
-  let barCoinMintBump: number;
-  let makerFooCoinAssocTokenAcct: anchor.web3.PublicKey;
-  let makerBarCoinAssocTokenAcct: anchor.web3.PublicKey;
-  let takerFooCoinAssocTokenAcct: anchor.web3.PublicKey;
-  let takerBarCoinAssocTokenAcct: anchor.web3.PublicKey;
   let escrowAccount: anchor.web3.PublicKey;
   let escrowAccountBump: number;
   let swapState: anchor.web3.Keypair;
@@ -82,15 +72,21 @@ const UserInterface: FC = () => {
     barCoinAmount: 0,
   }
   const [state, setState] = useState(initialState);
-  const [addresses, setAddresses] = useState({
+  const [addresses, _setAddresses] = useState({
+    "maker": anchor.web3.Keypair.generate(),
+    "taker": anchor.web3.Keypair.generate(),
     "fooCoinMint": dummyPubkey,
     "fooCoinMintBump": -1,
     "barCoinMint": dummyPubkey,
     "barCoinMintBump": -1,
+    "makerFooCoinAssocTokenAcct": dummyPubkey,
+    "makerBarCoinAssocTokenAcct": dummyPubkey,
+    "takerFooCoinAssocTokenAcct": dummyPubkey,
+    "takerBarCoinAssocTokenAcct": dummyPubkey,
   });
 
   useEffect(() => {
-    async function setMintAdresses() {
+    async function setAddresses() {
       // Generate fooCoinMint address (PDA).
       const [fooCoinMint, fooCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
         [(new TextEncoder()).encode('foo')], programId
@@ -99,15 +95,45 @@ const UserInterface: FC = () => {
       const [barCoinMint, barCoinMintBump] = await anchor.web3.PublicKey.findProgramAddress(
         [(new TextEncoder()).encode('bar')], programId
       );
-      setAddresses({
+      // Get maker and taker FooCoin and BarCoin ATAs addresses.
+      const makerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+        spl.TOKEN_PROGRAM_ID,
+        fooCoinMint,
+        addresses["maker"].publicKey
+      );
+      const makerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+        spl.TOKEN_PROGRAM_ID,
+        barCoinMint,
+        addresses["maker"].publicKey
+      );
+      const takerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+        spl.TOKEN_PROGRAM_ID,
+        fooCoinMint,
+        addresses["taker"].publicKey
+      );
+      const takerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
+        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+        spl.TOKEN_PROGRAM_ID,
+        barCoinMint,
+        addresses["taker"].publicKey
+      );
+      _setAddresses({
+        ...addresses,
         "fooCoinMint": fooCoinMint,
         "fooCoinMintBump": fooCoinMintBump,
         "barCoinMint": barCoinMint,
         "barCoinMintBump": barCoinMintBump,
+        "makerFooCoinAssocTokenAcct": makerFooCoinAssocTokenAcct,
+        "makerBarCoinAssocTokenAcct": makerBarCoinAssocTokenAcct,
+        "takerFooCoinAssocTokenAcct": takerFooCoinAssocTokenAcct,
+        "takerBarCoinAssocTokenAcct": takerBarCoinAssocTokenAcct,
       });
     };
-    setMintAdresses()
-  }, [])
+    setAddresses()
+  }, [addresses])
 
   async function getProgram() {
     if (wallet) {
@@ -151,31 +177,6 @@ const UserInterface: FC = () => {
     }
     const program = await getProgram();
     if (wallet && payer && program) {
-      // Create maker and taker FooCoin and BarCoin ATAs.
-      makerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
-        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-        spl.TOKEN_PROGRAM_ID,
-        addresses["fooCoinMint"],
-        maker.publicKey
-      );
-      makerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
-        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-        spl.TOKEN_PROGRAM_ID,
-        addresses["barCoinMint"],
-        maker.publicKey
-      );
-      takerFooCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
-        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-        spl.TOKEN_PROGRAM_ID,
-        addresses["fooCoinMint"],
-        taker.publicKey
-      );
-      takerBarCoinAssocTokenAcct = await spl.Token.getAssociatedTokenAddress(
-        spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-        spl.TOKEN_PROGRAM_ID,
-        addresses["barCoinMint"],
-        taker.publicKey
-      );
       // Generate swap state address.
       swapState = anchor.web3.Keypair.generate();
       // Generate escrow account address (PDA).
@@ -191,11 +192,11 @@ const UserInterface: FC = () => {
             accounts: {
               fooCoinMint: addresses["fooCoinMint"],
               barCoinMint: addresses["barCoinMint"],
-              makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
-              makerBarCoinAssocTokenAcct: makerBarCoinAssocTokenAcct,
+              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
+              makerBarCoinAssocTokenAcct: addresses["makerBarCoinAssocTokenAcct"],
               tokenProgram: spl.TOKEN_PROGRAM_ID,
               payer: payer.publicKey,
-              maker: maker.publicKey,
+              maker: addresses["maker"].publicKey,
               associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
               rent: anchor.web3.SYSVAR_RENT_PUBKEY,
               systemProgram: anchor.web3.SystemProgram.programId
@@ -209,11 +210,11 @@ const UserInterface: FC = () => {
             accounts: {
               fooCoinMint: addresses["fooCoinMint"],
               barCoinMint: addresses["barCoinMint"],
-              takerFooCoinAssocTokenAcct: takerFooCoinAssocTokenAcct,
-              takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+              takerFooCoinAssocTokenAcct: addresses["takerFooCoinAssocTokenAcct"],
+              takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
               tokenProgram: spl.TOKEN_PROGRAM_ID,
               payer: payer.publicKey,
-              taker: taker.publicKey,
+              taker: addresses["taker"].publicKey,
               associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
               rent: anchor.web3.SYSVAR_RENT_PUBKEY,
               systemProgram: anchor.web3.SystemProgram.programId
@@ -230,12 +231,12 @@ const UserInterface: FC = () => {
             accounts: {
               fooCoinMint: addresses["fooCoinMint"],
               barCoinMint: addresses["barCoinMint"],
-              makerFooCoinAssocTokenAcct: makerFooCoinAssocTokenAcct,
-              takerBarCoinAssocTokenAcct: takerBarCoinAssocTokenAcct,
+              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
+              takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
               rent: anchor.web3.SYSVAR_RENT_PUBKEY,
               payer: payer.publicKey,
-              maker: maker.publicKey,
-              taker: taker.publicKey,
+              maker: addresses["maker"].publicKey,
+              taker: addresses["taker"].publicKey,
               tokenProgram: spl.TOKEN_PROGRAM_ID,
               systemProgram: anchor.web3.SystemProgram.programId
             },
@@ -257,7 +258,7 @@ const UserInterface: FC = () => {
           },
         )
       )
-      await program.provider.send(tx, [maker, taker, swapState], opts as ConfirmOptions);
+      await program.provider.send(tx, [addresses["maker"], addresses["taker"], swapState], opts as ConfirmOptions);
     }
     setState({
       ...initialState

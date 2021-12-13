@@ -300,7 +300,6 @@ const UserInterface: FC = () => {
         );
         const signers = [addresses["maker"], addresses["taker"], addresses["swapState"]]
         await program.provider.send(tx, signers, opts as ConfirmOptions);
-        setState({...state, escrowInitialized: true});
       }
     }
   }
@@ -321,15 +320,16 @@ const UserInterface: FC = () => {
 
   function handleIxButtonClick(buttonName: string) {
     if (escrowValid()) {
-      setState({
-        ...state,
-        [buttonName + 'ButtonClicked']: true
-      })
       if (buttonName === 'submit') {
         submitEscrow()
       } else if (buttonName === 'accept') {
         acceptEscrow()
       }
+      setState({
+        ...state,
+        "escrowInitialized": true,
+        [buttonName + 'ButtonClicked']: true
+      })
     } else {
       resetEscrow()
     }

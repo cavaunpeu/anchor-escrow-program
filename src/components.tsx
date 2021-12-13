@@ -64,6 +64,7 @@ const UserInterface: FC = () => {
   const dummyPubkey = new anchor.web3.PublicKey("EfGSky4CMLRpbmhSQguiVkrV7pJr8e4zZT8NBo8HdSmS");
 
   const initialState = {
+    atasInitialized: false,
     submitButtonClicked: false,
     acceptButtonClicked: false,
     willFooCoinBalance: 100,
@@ -176,7 +177,7 @@ const UserInterface: FC = () => {
       await initMints();
     }
     const program = await getProgram();
-    if (wallet && payer && program) {
+    if (payer && program) {
       // Generate swap state address.
       swapState = anchor.web3.Keypair.generate();
       // Generate escrow account address (PDA).
@@ -185,43 +186,48 @@ const UserInterface: FC = () => {
         program.programId
       );
       // Send instructions necessary prior to initializing escrow.
-      let tx = new anchor.web3.Transaction().add(
-        // Initialize maker associated token accounts.
-        program.instruction.initMakerAssocTokenAccts(
-          {
-            accounts: {
-              fooCoinMint: addresses["fooCoinMint"],
-              barCoinMint: addresses["barCoinMint"],
-              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
-              makerBarCoinAssocTokenAcct: addresses["makerBarCoinAssocTokenAcct"],
-              tokenProgram: spl.TOKEN_PROGRAM_ID,
-              payer: payer.publicKey,
-              maker: addresses["maker"].publicKey,
-              associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-              systemProgram: anchor.web3.SystemProgram.programId
+      let tx = new anchor.web3.Transaction()
+      if (!state["atasInitialized"]) {
+        tx.add(
+          // Initialize maker associated token accounts.
+          program.instruction.initMakerAssocTokenAccts(
+            {
+              accounts: {
+                fooCoinMint: addresses["fooCoinMint"],
+                barCoinMint: addresses["barCoinMint"],
+                makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
+                makerBarCoinAssocTokenAcct: addresses["makerBarCoinAssocTokenAcct"],
+                tokenProgram: spl.TOKEN_PROGRAM_ID,
+                payer: payer.publicKey,
+                maker: addresses["maker"].publicKey,
+                associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                systemProgram: anchor.web3.SystemProgram.programId
+              }
             }
-          }
-        )
-      ).add(
-        // Initialize maker associated token accounts.
-        program.instruction.initTakerAssocTokenAccts(
-          {
-            accounts: {
-              fooCoinMint: addresses["fooCoinMint"],
-              barCoinMint: addresses["barCoinMint"],
-              takerFooCoinAssocTokenAcct: addresses["takerFooCoinAssocTokenAcct"],
-              takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
-              tokenProgram: spl.TOKEN_PROGRAM_ID,
-              payer: payer.publicKey,
-              taker: addresses["taker"].publicKey,
-              associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-              systemProgram: anchor.web3.SystemProgram.programId
+          )
+        ).add(
+          // Initialize taker associated token accounts.
+          program.instruction.initTakerAssocTokenAccts(
+            {
+              accounts: {
+                fooCoinMint: addresses["fooCoinMint"],
+                barCoinMint: addresses["barCoinMint"],
+                takerFooCoinAssocTokenAcct: addresses["takerFooCoinAssocTokenAcct"],
+                takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
+                tokenProgram: spl.TOKEN_PROGRAM_ID,
+                payer: payer.publicKey,
+                taker: addresses["taker"].publicKey,
+                associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+                rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+                systemProgram: anchor.web3.SystemProgram.programId
+              }
             }
-          }
-        )
-      ).add(
+          )
+        );
+        setState({...state, atasInitialized: true});
+      }
+      tx.add(
         // Mint FooCoins and BarCoins to maker and taker respectively.
         program.instruction.resetAssocTokenAcctBalances(
           addresses["fooCoinMintBump"],

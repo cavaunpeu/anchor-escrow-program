@@ -50,7 +50,7 @@ const Description: FC = () => {
 
 const UserInterface: FC = () => {
 
-  const production = true;
+  const production = false;
   const initTokenBalance = 100;
   const dummyPubkey = new anchor.web3.PublicKey("EfGSky4CMLRpbmhSQguiVkrV7pJr8e4zZT8NBo8HdSmS");
   const dummyKeypair = anchor.web3.Keypair.generate();
@@ -192,6 +192,9 @@ const UserInterface: FC = () => {
   async function initializeEscrow() {
     const program = await getProgram();
     if (payer && program) {
+      if (!production) {
+        await initMints()
+      }
       const tx = new anchor.web3.Transaction();
       tx.add(
         // Initialize maker associated token accounts.

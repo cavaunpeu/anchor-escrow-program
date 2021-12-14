@@ -227,6 +227,27 @@ const UserInterface: FC = () => {
           }
         )
       ).add(
+        // Reset maker and taker token account balances.
+        program.instruction.resetAssocTokenAcctBalances(
+          addresses["fooCoinMintBump"],
+          addresses["barCoinMintBump"],
+          new anchor.BN(initTokenBalance),
+          {
+            accounts: {
+              fooCoinMint: addresses["fooCoinMint"],
+              barCoinMint: addresses["barCoinMint"],
+              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
+              takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
+              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+              payer: payer.publicKey,
+              maker: addresses["maker"].publicKey,
+              taker: addresses["taker"].publicKey,
+              tokenProgram: spl.TOKEN_PROGRAM_ID,
+              systemProgram: anchor.web3.SystemProgram.programId
+            },
+          }
+        )
+      ).add(
         // Initialize escrow.
         program.instruction.initEscrow(
           addresses["escrowAccountBump"],
@@ -293,7 +314,7 @@ const UserInterface: FC = () => {
             }
           }
         )
-      )
+      );
       await program.provider.send(tx, [addresses["maker"], addresses["taker"]], opts as ConfirmOptions);
     }
   }
@@ -322,7 +343,7 @@ const UserInterface: FC = () => {
     }
   }
 
-  async function resetEscrow() {
+  function resetEscrow() {
     setState({
       ...initialState,
       escrowInitialized: state['escrowInitialized']
@@ -332,6 +353,8 @@ const UserInterface: FC = () => {
   function escrowValid(): boolean {
     return (
       (
+        state['escrowInitialized']
+      ) && (
         Boolean(state['fooCoinAmount']) && (state['fooCoinAmount'] <= state['willFooCoinBalance'])
       ) && (
         Boolean(state['barCoinAmount']) && (state['barCoinAmount'] <= state['alanBarCoinBalance'])
@@ -363,10 +386,6 @@ const UserInterface: FC = () => {
     }
   }
 
-  function handleResetButtonClick() {
-    resetEscrow()
-  }
-
   function updateCoinAmount(event: any, coinAmount: string) {
     let amount = event.target.value;
     setState({
@@ -378,6 +397,7 @@ const UserInterface: FC = () => {
   const initializeButtonClassName = (!state['escrowInitialized']) ? 'valid-ix-button' : 'invalid-ix-button';
   const submitButtonClassName = (escrowValid() && !state['submitButtonClicked']) ? 'valid-ix-button' : 'invalid-ix-button';
   const acceptButtonClassName = (state['submitButtonClicked'] && !state['acceptButtonClicked']) ? 'valid-ix-button' : 'invalid-ix-button';
+  const resetButtonClassName = (state['escrowInitialized']) ? 'valid-reset-button' : 'invalid-ix-button';
 
   return(
     <div className='flex flex-col justify-start h-screen w-full font-mono'>
@@ -530,7 +550,7 @@ const UserInterface: FC = () => {
               <button className={initializeButtonClassName} onClick={() => handleIxButtonClick('initialize')}>Initialize</button>
               <button className={submitButtonClassName} onClick={() => handleIxButtonClick('submit')}>Submit</button>
               <button className={acceptButtonClassName} onClick={() => {if (state['submitButtonClicked']) {handleIxButtonClick('accept')}}}>Accept</button>
-              <button className='reset-button' onClick={() => handleResetButtonClick()}>Reset</button>
+              <button className={resetButtonClassName} onClick={() => handleIxButtonClick('reset')}>Reset</button>
             </div>
           </div>
         </div>

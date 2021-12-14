@@ -11,7 +11,7 @@
         @apply bg-gray-700 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-gray-700 h-16 text-2xl
     }
 
-    .reset-button {
+    .valid-reset-button {
         @apply valid-ix-button bg-pink-300 ring-pink-300
     }
 

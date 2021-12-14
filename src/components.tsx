@@ -380,6 +380,7 @@ const UserInterface: FC = () => {
     })
   }
 
+  const initializeButtonClassName = (!state['escrowInitialized']) ? 'valid-ix-button' : 'invalid-ix-button';
   const submitButtonClassName = (escrowValid() && !state['submitButtonClicked']) ? 'valid-ix-button' : 'invalid-ix-button';
   const acceptButtonClassName = (state['submitButtonClicked'] && !state['acceptButtonClicked']) ? 'valid-ix-button' : 'invalid-ix-button';
 
@@ -530,7 +531,8 @@ const UserInterface: FC = () => {
       <section className="antialiased text-gray-600 pt-8">
         <div className="flex flex-col">
           <div className="w-full mx-auto">
-            <div className='grid grid-cols-3 gap-12 text-gray-900'>
+            <div className='grid grid-cols-4 gap-12 text-gray-900'>
+              <button className={initializeButtonClassName} onClick={() => handleIxButtonClick('initialize')}>Initialize</button>
               <button className={submitButtonClassName} onClick={() => handleIxButtonClick('submit')}>Submit</button>
               <button className={acceptButtonClassName} onClick={() => {if (state['submitButtonClicked']) {handleIxButtonClick('accept')}}}>Accept</button>
               <button className='reset-button' onClick={() => handleResetButtonClick()}>Reset</button>

@@ -43,7 +43,7 @@ const Description: FC = () => {
       <p className='pb-4'>Instructions:</p>
       <p className='pl-4'>1. Specify FooCoins and BarCoins amounts.</p>
       <p className='pl-4'>2. Press Submit.</p>
-      <p className='pl-4'>2. Press Accept.</p>
+      <p className='pl-4'>3. Press Accept.</p>
     </div>
   )
 }
@@ -187,6 +187,17 @@ const UserInterface: FC = () => {
   }
 
   async function submitEscrow() {
+    console.log("maker", addresses["maker"].publicKey.toBase58());
+    console.log("taker", addresses["taker"].publicKey.toBase58());
+    console.log("swapState", addresses["swapState"].publicKey.toBase58());
+    console.log("fooCoinMint", addresses["fooCoinMint"].toBase58());
+    console.log("barCoinMint", addresses["barCoinMint"].toBase58());
+    console.log("escrowAccount", addresses["escrowAccount"].toBase58());
+    console.log("makerFooCoinAssocTokenAcct", addresses["makerFooCoinAssocTokenAcct"].toBase58());
+    console.log("makerBarCoinAssocTokenAcct", addresses["makerBarCoinAssocTokenAcct"].toBase58());
+    console.log("takerFooCoinAssocTokenAcct", addresses["takerFooCoinAssocTokenAcct"].toBase58());
+    console.log("takerBarCoinAssocTokenAcct", addresses["takerBarCoinAssocTokenAcct"].toBase58());
+    console.log("escrowInitialized", state["escrowInitialized"]);
     const program = await getProgram();
     if (payer && program) {
       const tx = new anchor.web3.Transaction();
@@ -248,7 +259,9 @@ const UserInterface: FC = () => {
         );
         signers.push(addresses["swapState"]);
       }
-      tx.add(
+      await program.provider.send(tx, signers, opts as ConfirmOptions);
+      const tx1 = new anchor.web3.Transaction();
+      tx1.add(
         // Reset maker and taker token account balances.
         program.instruction.resetAssocTokenAcctBalances(
           addresses["fooCoinMintBump"],
@@ -269,16 +282,59 @@ const UserInterface: FC = () => {
             },
           }
         )
+      ).add(
+        // Submit escrow.
+        program.instruction.submit(
+          addresses["escrowAccountBump"],
+          new anchor.BN(state["fooCoinAmount"]),
+          new anchor.BN(state["barCoinAmount"]),
+          {
+            accounts: {
+              barCoinMint: addresses["barCoinMint"],
+              swapState: addresses["swapState"].publicKey,
+              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
+              escrowAccount: addresses["escrowAccount"],
+              payer: payer.publicKey,
+              maker: addresses["maker"].publicKey,
+              tokenProgram: spl.TOKEN_PROGRAM_ID,
+              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+              systemProgram: anchor.web3.SystemProgram.programId,
+            }
+          }
+        )
       )
-      await program.provider.send(tx, signers, opts as ConfirmOptions);
+      await program.provider.send(tx1, [addresses["maker"], addresses["taker"]], opts as ConfirmOptions);
     }
   }
 
-  function acceptEscrow() {
-    console.log('accepting escrow!');
+  async function acceptEscrow() {
+    const program = await getProgram();
+    if (payer && program) {
+      console.log((await program.account.swapState.fetch(addresses["swapState"].publicKey)).barCoinMint.toBase58());
+      console.log((await program.account.swapState.fetch(addresses["swapState"].publicKey)));
+      await program.rpc.accept(
+        {
+          accounts: {
+            swapState: addresses["swapState"].publicKey,
+            takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
+            // In a real app, taker will need to get/compute this value from their client.
+            makerBarCoinAssocTokenAcct: addresses["makerBarCoinAssocTokenAcct"],
+            escrowAccount: addresses["escrowAccount"],
+            takerFooCoinAssocTokenAcct: addresses["takerFooCoinAssocTokenAcct"],
+            payer: payer.publicKey,
+            // In a real app, taker will need to get/compute this value from their client.
+            maker: addresses["maker"].publicKey,
+            taker: addresses["taker"].publicKey,
+            tokenProgram: spl.TOKEN_PROGRAM_ID,
+          },
+          signers: [addresses["taker"]]
+        }
+      );
+    }
   }
 
-  function resetEscrow() {
+  async function resetEscrow() {
+    await initMints();
     setState({
       ...initialState,
       "escrowInitialized": state["escrowInitialized"]

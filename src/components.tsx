@@ -187,17 +187,6 @@ const UserInterface: FC = () => {
   }
 
   async function submitEscrow() {
-    console.log("maker", addresses["maker"].publicKey.toBase58());
-    console.log("taker", addresses["taker"].publicKey.toBase58());
-    console.log("swapState", addresses["swapState"].publicKey.toBase58());
-    console.log("fooCoinMint", addresses["fooCoinMint"].toBase58());
-    console.log("barCoinMint", addresses["barCoinMint"].toBase58());
-    console.log("escrowAccount", addresses["escrowAccount"].toBase58());
-    console.log("makerFooCoinAssocTokenAcct", addresses["makerFooCoinAssocTokenAcct"].toBase58());
-    console.log("makerBarCoinAssocTokenAcct", addresses["makerBarCoinAssocTokenAcct"].toBase58());
-    console.log("takerFooCoinAssocTokenAcct", addresses["takerFooCoinAssocTokenAcct"].toBase58());
-    console.log("takerBarCoinAssocTokenAcct", addresses["takerBarCoinAssocTokenAcct"].toBase58());
-    console.log("escrowInitialized", state["escrowInitialized"]);
     const program = await getProgram();
     if (payer && program) {
       const tx = new anchor.web3.Transaction();

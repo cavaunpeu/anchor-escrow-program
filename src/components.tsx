@@ -64,7 +64,10 @@ const UserInterface: FC = () => {
     submitButtonClicked: false,
     acceptButtonClicked: false,
     willFooCoinBalance: initTokenBalance,
+    willBarCoinBalance: 0,
+    alanFooCoinBalance: 0,
     alanBarCoinBalance: initTokenBalance,
+    escrowBalance: 0,
     fooCoinAmount: 0,
     barCoinAmount: 0,
   }
@@ -362,7 +365,7 @@ const UserInterface: FC = () => {
     )
   }
 
-  function handleIxButtonClick(buttonName: string) {
+  async function handleIxButtonClick(buttonName: string) {
     if (buttonName === 'initialize') {
       initializeEscrow();
       setState({
@@ -370,16 +373,22 @@ const UserInterface: FC = () => {
         "escrowInitialized": true,
       });
     } else if (buttonName === 'submit' && escrowValid()) {
-      submitEscrow();
+      await submitEscrow();
       setState({
         ...state,
-        'submitButtonClicked': true
+        'submitButtonClicked': true,
+        willFooCoinBalance: state['willFooCoinBalance'] - state['fooCoinAmount'],
+        escrowBalance: state['fooCoinAmount']
       });
     } else if (buttonName === 'accept' && escrowValid()) {
-      acceptEscrow();
+      await acceptEscrow();
       setState({
         ...state,
-        'acceptButtonClicked': true
+        'acceptButtonClicked': true,
+        alanBarCoinBalance: state['alanBarCoinBalance'] - state['barCoinAmount'],
+        willBarCoinBalance: state['barCoinAmount'],
+        alanFooCoinBalance: state['escrowBalance'],
+        escrowBalance: 0
       });
     } else if (buttonName === 'reset') {
       resetEscrow();
@@ -441,6 +450,34 @@ const UserInterface: FC = () => {
                     <tr>
                       <td className="p-2 whitespace-nowrap">
                         <div className="flex items-center">
+                          <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-05.jpg" width="40" height="40" alt="Will"></img></div>
+                          <div>Will</div>
+                        </div>
+                      </td>
+                      <td className="p-2 whitespace-nowrap">
+                        <div>BarCoins</div>
+                      </td>
+                      <td className="p-2 whitespace-nowrap">
+                        <div className="text-green-500 text-2xl">{state['willBarCoinBalance']}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 whitespace-nowrap">
+                        <div className="flex items-center">
+                          <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-06.jpg" width="40" height="40" alt="Alan"></img></div>
+                          <div>Alan</div>
+                        </div>
+                      </td>
+                      <td className="p-2 whitespace-nowrap">
+                        <div>FooCoins</div>
+                      </td>
+                      <td className="p-2 whitespace-nowrap">
+                        <div className="text-green-500 text-2xl">{state['alanFooCoinBalance']}</div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td className="p-2 whitespace-nowrap">
+                        <div className="flex items-center">
                           <div className="w-10 h-10 flex-shrink-0 mr-2 sm:mr-3"><img className="rounded-full" src="https://raw.githubusercontent.com/cruip/vuejs-admin-dashboard-template/main/src/images/user-36-06.jpg" width="40" height="40" alt="Alan"></img></div>
                           <div>Alan</div>
                         </div>
@@ -463,7 +500,7 @@ const UserInterface: FC = () => {
                         <div>FooCoins</div>
                       </td>
                       <td className="p-2 whitespace-nowrap">
-                        <div className="text-2xl">0</div>
+                        <div className="text-green-500 text-2xl">{state['escrowBalance']}</div>
                       </td>
                     </tr>
                   </tbody>

@@ -233,27 +233,6 @@ const UserInterface: FC = () => {
           }
         )
       ).add(
-        // Reset maker and taker token account balances.
-        program.instruction.resetAssocTokenAcctBalances(
-          addresses["fooCoinMintBump"],
-          addresses["barCoinMintBump"],
-          new anchor.BN(initTokenBalance),
-          {
-            accounts: {
-              fooCoinMint: addresses["fooCoinMint"],
-              barCoinMint: addresses["barCoinMint"],
-              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
-              takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
-              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-              payer: payer.publicKey,
-              maker: addresses["maker"].publicKey,
-              taker: addresses["taker"].publicKey,
-              tokenProgram: spl.TOKEN_PROGRAM_ID,
-              systemProgram: anchor.web3.SystemProgram.programId
-            },
-          }
-        )
-      ).add(
         // Initialize escrow.
         program.instruction.initEscrow(
           addresses["escrowAccountBump"],

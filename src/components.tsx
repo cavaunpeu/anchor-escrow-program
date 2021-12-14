@@ -244,7 +244,6 @@ const UserInterface: FC = () => {
         )
       );
       let signers = [addresses["maker"], addresses["taker"], addresses["swapState"]];
-      console.log(signers);
       await program.provider.send(tx, signers, opts as ConfirmOptions);
     }
   }
@@ -302,8 +301,6 @@ const UserInterface: FC = () => {
   async function acceptEscrow() {
     const program = await getProgram();
     if (payer && program) {
-      console.log((await program.account.swapState.fetch(addresses["swapState"].publicKey)).barCoinMint.toBase58());
-      console.log((await program.account.swapState.fetch(addresses["swapState"].publicKey)));
       await program.rpc.accept(
         {
           accounts: {

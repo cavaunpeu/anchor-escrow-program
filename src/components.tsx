@@ -186,71 +186,74 @@ const UserInterface: FC = () => {
     }
   }
 
+  async function initializeEscrow() {
+    const program = await getProgram();
+    if (payer && program) {
+      const tx = new anchor.web3.Transaction();
+      tx.add(
+        // Initialize maker associated token accounts.
+        program.instruction.initMakerAssocTokenAccts(
+          {
+            accounts: {
+              fooCoinMint: addresses["fooCoinMint"],
+              barCoinMint: addresses["barCoinMint"],
+              makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
+              makerBarCoinAssocTokenAcct: addresses["makerBarCoinAssocTokenAcct"],
+              tokenProgram: spl.TOKEN_PROGRAM_ID,
+              payer: payer.publicKey,
+              maker: addresses["maker"].publicKey,
+              associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+              systemProgram: anchor.web3.SystemProgram.programId
+            }
+          }
+        )
+      ).add(
+        // Initialize taker associated token accounts.
+        program.instruction.initTakerAssocTokenAccts(
+          {
+            accounts: {
+              fooCoinMint: addresses["fooCoinMint"],
+              barCoinMint: addresses["barCoinMint"],
+              takerFooCoinAssocTokenAcct: addresses["takerFooCoinAssocTokenAcct"],
+              takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
+              tokenProgram: spl.TOKEN_PROGRAM_ID,
+              payer: payer.publicKey,
+              taker: addresses["taker"].publicKey,
+              associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
+              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+              systemProgram: anchor.web3.SystemProgram.programId
+            }
+          }
+        )
+      ).add(
+        // Initialize escrow.
+        program.instruction.initEscrow(
+          addresses["escrowAccountBump"],
+          {
+            accounts: {
+              fooCoinMint: addresses["fooCoinMint"],
+              swapState: addresses["swapState"].publicKey,
+              escrowAccount: addresses["escrowAccount"],
+              rent: anchor.web3.SYSVAR_RENT_PUBKEY,
+              payer: payer.publicKey,
+              tokenProgram: spl.TOKEN_PROGRAM_ID,
+              systemProgram: anchor.web3.SystemProgram.programId
+            }
+          },
+        )
+      );
+      let signers = [addresses["maker"], addresses["taker"], addresses["swapState"]];
+      console.log(signers);
+      await program.provider.send(tx, signers, opts as ConfirmOptions);
+    }
+  }
+
   async function submitEscrow() {
     const program = await getProgram();
     if (payer && program) {
       const tx = new anchor.web3.Transaction();
-      let signers = [addresses["maker"], addresses["taker"]];
-      // Initialized ATAs if uninitalized.
-      if (!state["escrowInitialized"]) {
-        tx.add(
-          // Initialize maker associated token accounts.
-          program.instruction.initMakerAssocTokenAccts(
-            {
-              accounts: {
-                fooCoinMint: addresses["fooCoinMint"],
-                barCoinMint: addresses["barCoinMint"],
-                makerFooCoinAssocTokenAcct: addresses["makerFooCoinAssocTokenAcct"],
-                makerBarCoinAssocTokenAcct: addresses["makerBarCoinAssocTokenAcct"],
-                tokenProgram: spl.TOKEN_PROGRAM_ID,
-                payer: payer.publicKey,
-                maker: addresses["maker"].publicKey,
-                associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-                rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-                systemProgram: anchor.web3.SystemProgram.programId
-              }
-            }
-          )
-        ).add(
-          // Initialize taker associated token accounts.
-          program.instruction.initTakerAssocTokenAccts(
-            {
-              accounts: {
-                fooCoinMint: addresses["fooCoinMint"],
-                barCoinMint: addresses["barCoinMint"],
-                takerFooCoinAssocTokenAcct: addresses["takerFooCoinAssocTokenAcct"],
-                takerBarCoinAssocTokenAcct: addresses["takerBarCoinAssocTokenAcct"],
-                tokenProgram: spl.TOKEN_PROGRAM_ID,
-                payer: payer.publicKey,
-                taker: addresses["taker"].publicKey,
-                associatedTokenProgram: spl.ASSOCIATED_TOKEN_PROGRAM_ID,
-                rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-                systemProgram: anchor.web3.SystemProgram.programId
-              }
-            }
-          )
-        ).add(
-          // Initialize escrow.
-          program.instruction.initEscrow(
-            addresses["escrowAccountBump"],
-            {
-              accounts: {
-                fooCoinMint: addresses["fooCoinMint"],
-                swapState: addresses["swapState"].publicKey,
-                escrowAccount: addresses["escrowAccount"],
-                rent: anchor.web3.SYSVAR_RENT_PUBKEY,
-                payer: payer.publicKey,
-                tokenProgram: spl.TOKEN_PROGRAM_ID,
-                systemProgram: anchor.web3.SystemProgram.programId
-              }
-            },
-          )
-        );
-        signers.push(addresses["swapState"]);
-      }
-      await program.provider.send(tx, signers, opts as ConfirmOptions);
-      const tx1 = new anchor.web3.Transaction();
-      tx1.add(
+      tx.add(
         // Reset maker and taker token account balances.
         program.instruction.resetAssocTokenAcctBalances(
           addresses["fooCoinMintBump"],
@@ -292,7 +295,7 @@ const UserInterface: FC = () => {
           }
         )
       )
-      await program.provider.send(tx1, [addresses["maker"], addresses["taker"]], opts as ConfirmOptions);
+      await program.provider.send(tx, [addresses["maker"], addresses["taker"]], opts as ConfirmOptions);
     }
   }
 
@@ -323,10 +326,9 @@ const UserInterface: FC = () => {
   }
 
   async function resetEscrow() {
-    await initMints();
     setState({
       ...initialState,
-      "escrowInitialized": state["escrowInitialized"]
+      escrowInitialized: state['escrowInitialized']
     });
   }
 
@@ -341,19 +343,26 @@ const UserInterface: FC = () => {
   }
 
   function handleIxButtonClick(buttonName: string) {
-    if (escrowValid()) {
-      if (buttonName === 'submit') {
-        submitEscrow()
-      } else if (buttonName === 'accept') {
-        acceptEscrow()
-      }
+    if (buttonName === 'initialize') {
+      initializeEscrow();
       setState({
         ...state,
         "escrowInitialized": true,
-        [buttonName + 'ButtonClicked']: true
-      })
-    } else {
-      resetEscrow()
+      });
+    } else if (buttonName === 'submit' && escrowValid()) {
+      submitEscrow();
+      setState({
+        ...state,
+        'submitButtonClicked': true
+      });
+    } else if (buttonName === 'accept' && escrowValid()) {
+      acceptEscrow();
+      setState({
+        ...state,
+        'acceptButtonClicked': true
+      });
+    } else if (buttonName === 'reset') {
+      resetEscrow();
     }
   }
 

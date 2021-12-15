@@ -17,7 +17,6 @@ const opts = {
 const UserInterface: FC = () => {
 
   // Read config.
-  const production = config.production;
   const initTokenBalance = config.initTokenBalance;
 
   // Use wallet and connection.

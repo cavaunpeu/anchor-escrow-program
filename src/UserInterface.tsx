@@ -3,10 +3,11 @@ import * as anchor from '@project-serum/anchor';
 import * as spl from '@solana/spl-token';
 import { ConfirmOptions } from '@solana/web3.js'
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
-import idl from './idl.json';
 import AccountBalances from './AccountBalances';
 import EscrowTerms from './EscrowTerms';
 import Buttons from './Buttons';
+import idl from './idl.json';
+import config from './config.json';
 
 const programId = new anchor.web3.PublicKey(idl.metadata.address);
 const opts = {
@@ -15,15 +16,16 @@ const opts = {
 
 const UserInterface: FC = () => {
 
-  const production = false;
-  const initTokenBalance = 100;
-  const dummyPubkey = new anchor.web3.PublicKey("5RZBsktv2Gwy1hsPbxKf9B39WscqK66cEAaak2JnWTrv");
-  const dummyKeypair = anchor.web3.Keypair.generate();
+  // Read config.
+  const production = config.production;
+  const initTokenBalance = config.initTokenBalance;
 
+  // Use wallet and connection.
   const wallet = useAnchorWallet();
   const connection = useConnection().connection;
   const payer = wallet;
 
+  // Set initial state.
   const initialState = {
     escrowInitialized: false,
     submitButtonClicked: false,
@@ -37,6 +39,11 @@ const UserInterface: FC = () => {
     barCoinAmount: 0,
   }
   const [state, setState] = useState(initialState);
+
+  // Set addresses.
+  const dummyKeypair = anchor.web3.Keypair.generate();
+  const dummyPubkey = dummyKeypair.publicKey;
+
   const [addresses, _setAddresses] = useState({
     "maker": dummyKeypair,
     "taker": dummyKeypair,

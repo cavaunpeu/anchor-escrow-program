@@ -528,7 +528,7 @@ const UserInterface: FC = () => {
                       </td>
                       <td className="p-2 whitespace-nowrap">
                         <input
-                          disabled={state['submitButtonClicked']}
+                          disabled={!state['escrowInitialized'] || state['submitButtonClicked']}
                           placeholder={'max: ' + state['willFooCoinBalance']}
                           value={state['fooCoinAmount'] || ''}
                           onChange={(event) => updateCoinAmount(event, 'fooCoinAmount')}
@@ -548,7 +548,7 @@ const UserInterface: FC = () => {
                       </td>
                       <td className="p-2 whitespace-nowrap">
                         <input
-                          disabled={state['submitButtonClicked']}
+                          disabled={!state['escrowInitialized'] || state['submitButtonClicked']}
                           placeholder={'max: ' + state['alanBarCoinBalance']}
                           value={state['barCoinAmount'] || ''}
                           onChange={(event) => updateCoinAmount(event, 'barCoinAmount')}

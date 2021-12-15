@@ -57,7 +57,7 @@ interface AccountBalances {
   escrowBalance: number
 }
 
-function AccountBalancesSection(props: AccountBalances) {
+const AccountBalancesSection: FC<AccountBalances> = (props: AccountBalances) => {
   return (
     <section className="antialiased text-light-gray">
       <div className="flex flex-col">
@@ -172,7 +172,7 @@ interface EscrowTerms {
   updateCoinAmount: (event: any, coin: string) => void,
 }
 
-function EscrowTermsSection(props: EscrowTerms) {
+const EscrowTermsSection: FC<EscrowTerms> = (props: EscrowTerms) => {
   return (
     <section className="antialiased pt-8 text-light-gray">
       <div className="flex flex-col">
@@ -255,7 +255,7 @@ interface UserInterfaceButtons {
   handleIxButtonClick: (buttonName: string) => void
 }
 
-function UserInterfaceButtonsSection(props: UserInterfaceButtons) {
+const UserInterfaceButtonsSection: FC<UserInterfaceButtons> = (props: UserInterfaceButtons) => {
   const initializeButtonClassName = (!props.escrowInitialized) ? 'valid-ix-button' : 'invalid-ix-button';
   const submitButtonClassName = (props.escrowValid() && !props.submitButtonClicked) ? 'valid-ix-button' : 'invalid-ix-button';
   const acceptButtonClassName = (props.submitButtonClicked && !props.acceptButtonClicked) ? 'valid-ix-button' : 'invalid-ix-button';

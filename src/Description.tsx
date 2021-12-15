@@ -2,7 +2,7 @@ import { FC } from 'react';
 
 const Description: FC = () => {
   return (
-    <div className="text-indigo-100 text-2xl font-mono leading-loose">
+    <div className="text-indigo-100 text-xl font-mono leading-loose">
       <p className='pb-12'>
         In an escrow, <span className="text-indigo-300">Will</span> wants to exchange <span className="text-pink-300">FooCoins</span> for <span className="text-indigo-300">Alan's</span> <span className="text-pink-300">BarCoins</span>.
 
@@ -14,7 +14,7 @@ const Description: FC = () => {
       </p>
       <p className='pb-4'>Instructions:</p>
       <p className='pl-4'>1. <span className="text-indigo-300">Initialize</span> escrow.</p>
-      <p className='pl-4'>2. Specify <span className='text-pink-300'>FooCoins</span> and <span className='text-pink-300'>BarCoins</span> amounts.</p>
+      <p className='pl-4'>2. Set <span className='text-pink-300'>FooCoins</span> and <span className='text-pink-300'>BarCoins</span> amounts.</p>
       <p className='pl-4'>3. <span className="text-indigo-300">Submit</span> escrow (as <span className="text-indigo-300">Will</span>).</p>
       <p className='pl-4'>4. <span className="text-indigo-300">Accept</span> escrow (as <span className="text-indigo-300">Alan</span>).</p>
     </div>

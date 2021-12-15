@@ -53,7 +53,7 @@ const UserInterface: FC = () => {
 
   const production = false;
   const initTokenBalance = 100;
-  const dummyPubkey = new anchor.web3.PublicKey("EfGSky4CMLRpbmhSQguiVkrV7pJr8e4zZT8NBo8HdSmS");
+  const dummyPubkey = new anchor.web3.PublicKey("5RZBsktv2Gwy1hsPbxKf9B39WscqK66cEAaak2JnWTrv");
   const dummyKeypair = anchor.web3.Keypair.generate();
 
   const wallet = useAnchorWallet();

@@ -13,7 +13,7 @@ const Description: FC = () => {
         Both transactions are atomic: if anything goes wrong, they are rolled back.
       </p>
       <p className='pb-4'>Instructions:</p>
-      <p className='pl-4'>1. <span className="text-indigo-300">Initialize</span> escrow (once).</p>
+      <p className='pl-4'>1. <span className="text-indigo-300">Initialize</span> escrow.</p>
       <p className='pl-4'>2. Specify <span className='text-pink-300'>FooCoins</span> and <span className='text-pink-300'>BarCoins</span> amounts.</p>
       <p className='pl-4'>3. <span className="text-indigo-300">Submit</span> escrow (as <span className="text-indigo-300">Will</span>).</p>
       <p className='pl-4'>4. <span className="text-indigo-300">Accept</span> escrow (as <span className="text-indigo-300">Alan</span>).</p>

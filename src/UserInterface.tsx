@@ -293,13 +293,6 @@ const UserInterface: FC = () => {
     }
   }
 
-  function resetEscrow() {
-    setState({
-      ...initialState,
-      escrowInitialized: state['escrowInitialized']
-    });
-  }
-
   function escrowValid(): boolean {
     return (
       (
@@ -338,7 +331,10 @@ const UserInterface: FC = () => {
         escrowBalance: 0
       });
     } else if (buttonName === 'reset') {
-      resetEscrow();
+      setState({
+        ...initialState,
+        escrowInitialized: (state['submitButtonClicked'] && state['acceptButtonClicked']) ? false : state['escrowInitialized']
+      });
     }
   }
 

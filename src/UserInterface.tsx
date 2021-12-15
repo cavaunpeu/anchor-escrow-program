@@ -4,8 +4,6 @@ import * as spl from '@solana/spl-token';
 import { ConfirmOptions } from '@solana/web3.js'
 import { useAnchorWallet, useConnection } from '@solana/wallet-adapter-react';
 import idl from './idl.json';
-import Header from './Header';
-import Description from './Description';
 import AccountBalances from './AccountBalances';
 import EscrowTerms from './EscrowTerms';
 import Buttons from './Buttons';
@@ -384,20 +382,4 @@ const UserInterface: FC = () => {
   );
 }
 
-export const Navigation: FC = () => {
-  return(
-    <div className="bg-gray-800 p-8">
-      <Header />
-      <div className='flex flex-row h-screen py-20'>
-        <div className='flex flex-col justify-start w-3/5 px-24'>
-          <UserInterface />
-        </div>
-        <div className='flex flex-col justify-start w-2/5 pr-24'>
-          <Description />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default Navigation;
+export default UserInterface;

@@ -1,5 +1,5 @@
 import React, { FC } from 'react';
-import UserInterface from './components';
+import Navigation from './Navigation';
 import { WalletProvider, ConnectionProvider } from '@solana/wallet-adapter-react';
 import { getPhantomWallet } from '@solana/wallet-adapter-wallets';
 import { WalletModalProvider } from '@solana/wallet-adapter-react-ui';
@@ -13,7 +13,7 @@ const App: FC = () => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <UserInterface />
+                    <Navigation />
                 </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>

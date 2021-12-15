@@ -247,6 +247,36 @@ function EscrowTermsSection(props: EscrowTerms) {
   )
 }
 
+interface UserInterfaceButtons {
+  escrowInitialized: boolean,
+  escrowValid: () => boolean,
+  submitButtonClicked: boolean,
+  acceptButtonClicked: boolean,
+  handleIxButtonClick: (buttonName: string) => void
+}
+
+function UserInterfaceButtonsSection(props: UserInterfaceButtons) {
+  const initializeButtonClassName = (!props.escrowInitialized) ? 'valid-ix-button' : 'invalid-ix-button';
+  const submitButtonClassName = (props.escrowValid() && !props.submitButtonClicked) ? 'valid-ix-button' : 'invalid-ix-button';
+  const acceptButtonClassName = (props.submitButtonClicked && !props.acceptButtonClicked) ? 'valid-ix-button' : 'invalid-ix-button';
+  const resetButtonClassName = (props.escrowInitialized) ? 'valid-reset-button' : 'invalid-ix-button';
+
+  return (
+    <section className="antialiased text-gray-600 pt-8">
+      <div className="flex flex-col">
+        <div className="w-full mx-auto">
+          <div className='grid grid-cols-4 gap-12 text-gray-900'>
+            <button className={initializeButtonClassName} onClick={() => props.handleIxButtonClick('initialize')}>Initialize</button>
+            <button className={submitButtonClassName} onClick={() => props.handleIxButtonClick('submit')}>Submit</button>
+            <button className={acceptButtonClassName} onClick={() => {if (props.submitButtonClicked) {props.handleIxButtonClick('accept')}}}>Accept</button>
+            <button className={resetButtonClassName} onClick={() => props.handleIxButtonClick('reset')}>Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
 const UserInterface: FC = () => {
 
   const production = false;
@@ -584,11 +614,6 @@ const UserInterface: FC = () => {
     })
   }
 
-  const initializeButtonClassName = (!state['escrowInitialized']) ? 'valid-ix-button' : 'invalid-ix-button';
-  const submitButtonClassName = (escrowValid() && !state['submitButtonClicked']) ? 'valid-ix-button' : 'invalid-ix-button';
-  const acceptButtonClassName = (state['submitButtonClicked'] && !state['acceptButtonClicked']) ? 'valid-ix-button' : 'invalid-ix-button';
-  const resetButtonClassName = (state['escrowInitialized']) ? 'valid-reset-button' : 'invalid-ix-button';
-
   return(
     <div className='flex flex-col justify-start h-screen w-full font-mono'>
       <
@@ -609,18 +634,14 @@ const UserInterface: FC = () => {
         barCoinAmount={state['barCoinAmount']}
         updateCoinAmount={updateCoinAmount}
       />
-      <section className="antialiased text-gray-600 pt-8">
-        <div className="flex flex-col">
-          <div className="w-full mx-auto">
-            <div className='grid grid-cols-4 gap-12 text-gray-900'>
-              <button className={initializeButtonClassName} onClick={() => handleIxButtonClick('initialize')}>Initialize</button>
-              <button className={submitButtonClassName} onClick={() => handleIxButtonClick('submit')}>Submit</button>
-              <button className={acceptButtonClassName} onClick={() => {if (state['submitButtonClicked']) {handleIxButtonClick('accept')}}}>Accept</button>
-              <button className={resetButtonClassName} onClick={() => handleIxButtonClick('reset')}>Reset</button>
-            </div>
-          </div>
-        </div>
-      </section>
+      <
+        UserInterfaceButtonsSection
+        escrowInitialized={state['escrowInitialized']}
+        escrowValid={escrowValid}
+        submitButtonClicked={state['submitButtonClicked']}
+        acceptButtonClicked={state['acceptButtonClicked']}
+        handleIxButtonClick={handleIxButtonClick}
+      />
     </div>
   );
 }

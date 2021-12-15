@@ -349,7 +349,7 @@ const UserInterface: FC = () => {
   }
 
   async function handleIxButtonClick(buttonName: string) {
-    if (buttonName === 'initialize') {
+    if (buttonName === 'initialize' && !state['escrowInitialized']) {
       initializeEscrow();
       setState({
         ...state,

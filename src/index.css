@@ -4,11 +4,11 @@
 
 @layer components {
     .valid-ix-button {
-        @apply bg-indigo-300 shadow-2xl hover:text-indigo-50 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-indigo-300 h-16 text-2xl
+        @apply bg-indigo-300 shadow-2xl hover:text-indigo-50 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-indigo-300 h-16 text-lg
     }
 
     .invalid-ix-button {
-        @apply bg-gray-700 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-gray-700 h-16 text-2xl
+        @apply bg-gray-700 rounded-xl ring-2 ring-offset-2 ring-offset-current ring-gray-700 h-16 text-lg
     }
 
     .valid-reset-button {

@@ -136,11 +136,12 @@ const UserInterface: FC = () => {
     }
   }
 
-  async function initMints() {
-    // Initialize mints.
+  async function initializeEscrow() {
     const program = await getProgram();
-    if (wallet && payer && program) {
-      let tx = new anchor.web3.Transaction().add(
+    if (payer && program) {
+      const tx = new anchor.web3.Transaction()
+      .add(
+        // Initialize mints.
         program.instruction.initMints(
           addresses["fooCoinMintBump"],
           addresses["barCoinMintBump"],
@@ -155,19 +156,7 @@ const UserInterface: FC = () => {
             }
           }
         )
-      );
-      await program.provider.send(tx, [], opts as ConfirmOptions);
-    }
-  }
-
-  async function initializeEscrow() {
-    const program = await getProgram();
-    if (payer && program) {
-      if (!production) {
-        await initMints()
-      }
-      const tx = new anchor.web3.Transaction();
-      tx.add(
+      ).add(
         // Initialize maker associated token accounts.
         program.instruction.initMakerAssocTokenAccts(
           {

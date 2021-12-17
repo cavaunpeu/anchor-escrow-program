@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import Navigation from './Navigation';
 import { WalletProvider, ConnectionProvider } from '@solana/wallet-adapter-react';
 import { getPhantomWallet } from '@solana/wallet-adapter-wallets';

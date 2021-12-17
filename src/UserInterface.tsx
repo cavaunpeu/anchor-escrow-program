@@ -324,7 +324,6 @@ const UserInterface: FC = () => {
   }
 
   async function handleIxButtonClick(buttonName: string) {
-    console.log(buttonName, escrowValid())
     if (buttonName === "initialize" && !state["escrowInitialized"]) {
       initializeEscrow();
       setState({

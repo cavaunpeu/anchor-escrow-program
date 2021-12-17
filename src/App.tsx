@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { isMobile } from "react-device-detect";
 import Navigation from "./Navigation";
 import {
   WalletProvider,
@@ -22,6 +23,9 @@ if (cluster === "localhost") {
 const App: FC = () => {
   const wallets = [getPhantomWallet()];
 
+  if (isMobile) {
+    return <p>Unfortunately, this program only works on a Desktop browser.</p>
+  }
   return (
     <ConnectionProvider endpoint={endpoint}>
       <WalletProvider wallets={wallets} autoConnect>

@@ -387,13 +387,15 @@ const UserInterface: FC = () => {
         barCoinAmount={state["barCoinAmount"]}
         updateCoinAmount={updateCoinAmount}
       />
-      <Buttons
-        escrowInitialized={state["escrowInitialized"]}
-        escrowValid={escrowValid}
-        submitButtonClicked={state["submitButtonClicked"]}
-        acceptButtonClicked={state["acceptButtonClicked"]}
-        handleIxButtonClick={handleIxButtonClick}
-      />
+      {
+        wallet && <Buttons
+          escrowInitialized={state["escrowInitialized"]}
+          escrowValid={escrowValid}
+          submitButtonClicked={state["submitButtonClicked"]}
+          acceptButtonClicked={state["acceptButtonClicked"]}
+          handleIxButtonClick={handleIxButtonClick}
+        />
+      }
     </div>
   );
 };

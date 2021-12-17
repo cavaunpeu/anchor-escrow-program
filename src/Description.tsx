@@ -20,18 +20,21 @@ const Description: FC = () => {
       </p>
       <p className="pb-4">Instructions:</p>
       <p className="pl-4">
-        1. <span className="text-indigo-300">Initialize</span> escrow.
+        1. Connect Phantom wallet (top-right).
       </p>
       <p className="pl-4">
-        2. Set <span className="text-pink-300">FooCoins</span> and{" "}
+        2. <span className="text-indigo-300">Initialize</span> escrow.
+      </p>
+      <p className="pl-4">
+        3. Set <span className="text-pink-300">FooCoins</span> and{" "}
         <span className="text-pink-300">BarCoins</span> amounts.
       </p>
       <p className="pl-4">
-        3. <span className="text-indigo-300">Submit</span> escrow (as{" "}
+        4. <span className="text-indigo-300">Submit</span> escrow (as{" "}
         <span className="text-indigo-300">Will</span>).
       </p>
       <p className="pl-4">
-        4. <span className="text-indigo-300">Accept</span> escrow (as{" "}
+        5. <span className="text-indigo-300">Accept</span> escrow (as{" "}
         <span className="text-indigo-300">Alan</span>).
       </p>
     </div>

@@ -19,11 +19,18 @@ const Description: FC = () => {
         atomic: if anything goes wrong, they are rolled back.
       </p>
       <p className="pb-4">👉 Setup:</p>
+      <p className="pl-4">1. Connect Phantom wallet (top-right).</p>
       <p className="pl-4">
-        1. Connect Phantom wallet (top-right).
-      </p>
-      <p className="pl-4">
-        2. <a className="hover:text-indigo-300" href="https://medium.com/@josh.wolff.7/how-to-airdrop-sol-on-the-devnet-to-your-wallet-5f607c363201" target="_blank" rel="noreferrer">Airdrop</a> yourself SOL on devnet.
+        2.{" "}
+        <a
+          className="hover:text-indigo-300"
+          href="https://medium.com/@josh.wolff.7/how-to-airdrop-sol-on-the-devnet-to-your-wallet-5f607c363201"
+          target="_blank"
+          rel="noreferrer"
+        >
+          Airdrop
+        </a>{" "}
+        yourself SOL on devnet.
       </p>
       <p className="py-4">👉 Instructions:</p>
       <p className="pl-4">

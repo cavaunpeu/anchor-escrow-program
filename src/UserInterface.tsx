@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect } from 'react';
 import * as anchor from '@project-serum/anchor';
 import * as spl from '@solana/spl-token';
 import { ConfirmOptions } from '@solana/web3.js'

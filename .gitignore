@@ -6,6 +6,7 @@ target
 node_modules
 .vscode
 test-ledger
+build
 
 # Local Netlify folder
 .netlify

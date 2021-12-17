@@ -1,3 +1,4 @@
 {
-  "initTokenBalance": 100
+  "initTokenBalance": 100,
+  "cluster": "devnet"
 }

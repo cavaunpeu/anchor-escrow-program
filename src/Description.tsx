@@ -18,23 +18,27 @@ const Description: FC = () => {
         <span className="text-indigo-300">Alan</span>. Both transactions are
         atomic: if anything goes wrong, they are rolled back.
       </p>
-      <p className="pb-4">Instructions:</p>
+      <p className="pb-4">👉 Setup:</p>
       <p className="pl-4">
         1. Connect Phantom wallet (top-right).
       </p>
       <p className="pl-4">
-        2. <span className="text-indigo-300">Initialize</span> escrow.
+        2. <a className="hover:text-indigo-300" href="https://medium.com/@josh.wolff.7/how-to-airdrop-sol-on-the-devnet-to-your-wallet-5f607c363201" target="_blank" rel="noreferrer">Airdrop</a> yourself SOL on devnet.
+      </p>
+      <p className="py-4">👉 Instructions:</p>
+      <p className="pl-4">
+        1. <span className="text-indigo-300">Initialize</span> escrow.
       </p>
       <p className="pl-4">
-        3. Set <span className="text-pink-300">FooCoins</span> and{" "}
+        2. Set <span className="text-pink-300">FooCoins</span> and{" "}
         <span className="text-pink-300">BarCoins</span> amounts.
       </p>
       <p className="pl-4">
-        4. <span className="text-indigo-300">Submit</span> escrow (as{" "}
+        3. <span className="text-indigo-300">Submit</span> escrow (as{" "}
         <span className="text-indigo-300">Will</span>).
       </p>
       <p className="pl-4">
-        5. <span className="text-indigo-300">Accept</span> escrow (as{" "}
+        4. <span className="text-indigo-300">Accept</span> escrow (as{" "}
         <span className="text-indigo-300">Alan</span>).
       </p>
     </div>
